@@ -1,5 +1,5 @@
 pattLrep.fit<-function(obj, nitems, tpoints=1, formel=~1,elim=~1,resptype="ratingT",
-         undec=FALSE, ia=FALSE, iaT=FALSE, NItest=FALSE, pr.it=FALSE)
+         obj.names=NULL, undec=FALSE, ia=FALSE, iaT=FALSE, NItest=FALSE, pr.it=FALSE)
 {
     # nitems ... no of items at a given time point
     # tpoints ... no of timepoints
@@ -32,12 +32,20 @@ pattLrep.fit<-function(obj, nitems, tpoints=1, formel=~1,elim=~1,resptype="ratin
         stop("first argument must be either datafilename or dataframe")
    }
    varnames<-colnames(dat)
-   if (ncol(dat)>nobj) {
-        covnames<-varnames[(nobj+1):ncol(dat)]
-        covs<-as.data.frame(dat[,(nobj+1):ncol(dat)])
+   if (ncol(dat)>nobj) {                                         # from pattR.fit 2011-08-31
+        #covnames<-varnames[(nobj+1):ncol(dat)]
+        #covs<-as.data.frame(dat[,(nobj+1):ncol(dat)])
+        ## instead of the above rh 2011-05-13
+        formel.names<-attr(terms(as.formula(formel)),"term.labels")
+        formel.names<-unique(unlist(strsplit(formel.names,":"))) # 2011-08-31 remove interaction terms
+        elim.names<-attr(terms(as.formula(elim)),"term.labels")
+        elim.names<-unique(unlist(strsplit(elim.names,":")))     # 2011-08-31 remove interaction terms
+        covnames<-unique(c(formel.names,elim.names))
+        covs<-as.data.frame(dat[,covnames])
    } else {
         covs<-NULL
    }
+
    # for ratings: at least two items not NA
    idx<-apply(dat[,1:nobj],1,function(x) sum(!is.na(x))>1)
    dat<-dat[idx,]
@@ -58,7 +66,11 @@ pattLrep.fit<-function(obj, nitems, tpoints=1, formel=~1,elim=~1,resptype="ratin
 
 #######################################
 
-    ENV$obj.names<-varnames[1:nobj]
+    ## option for obj.names added
+    if (is.null(obj.names))
+      ENV$obj.names<-varnames[1:nobj]
+    else
+      ENV$obj.names<-obj.names[1:nobj]
 
     if(NItest)
       if(!any(is.na(dat)))

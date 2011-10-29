@@ -118,7 +118,7 @@ pattL.fit(obj, nitems, formel = ~1, elim = ~1, resptype = "rating",
 \examples{
 ## fit only four items
 data(music)
-music4<-music[,c("jazz","blues","folk","rap")]
+music4<-music[,c("jazz","blue","folk","rap")]
 pattL.fit(music4, nitems=4)
 
 ## fit additional undecided effect
