@@ -1,6 +1,7 @@
 useDynLib("prefmod", .registration = TRUE)
 
 import("stats", "graphics", "gnm", "colorspace")
+importFrom("methods", "is")
 importFrom("grDevices", "xy.coords")
 importFrom("utils", "flush.console", "read.table", "write.table")
 

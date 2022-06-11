@@ -31,7 +31,7 @@
   The original data contained  16 029 cases, after removal of cases with missing values and improper rankings this design data frame is based on 12216 observations.
 }
 \source{%
-  \url{http://ec.europa.eu/research/press/2001/pr0612en.html}
+  \url{https://data.europa.eu/data/datasets/s209_55_2_ebs154}
 }
 \references{Christensen, T. (2001). Eurobarometer 55.2: Europeans, science and technology. Technical
 report, European Opinion Research Group, Commission of the European Communities,

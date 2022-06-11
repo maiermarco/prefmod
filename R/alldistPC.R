@@ -44,8 +44,8 @@
 
 
   # Test for incorrect offset specification in formula object
-  testoffset<-try(is.null(attr(terms(formula(mf)),"offset")),silent=TRUE)
-  if (!(class(testoffset)=="try-error" || testoffset)){
+  testoffset <- try(is.null(attr(terms(formula(mf)), "offset")), silent = TRUE)
+  if(!(is(testoffset, "try-error") || testoffset)){
       stop("Please specify offset as separate argument outside the model formula.")
   }
 
@@ -55,7 +55,7 @@
   mf$drop.unused.levels <- TRUE
   mf[[1]] <- as.name("model.frame")
   mf <- try(eval(mf,  parent.frame()), silent=TRUE)
-  ######if (class(mf)=="try-error"){
+  ######if (is(mf, "try-error")){
   ######    if (!missing(offset) && length(offset) != ddim[1]) {
   ######    stop("Number of offsets is ", length(offset), ", should equal ", ddim[1], " (number of observations)")
   ######    }
@@ -279,7 +279,7 @@ if (!is.null(startp)) p<-startp
    #####   if (verbose){ cat(iter,"..") }
 
       fit <- try(glm.fit(x=XZ, y=Y, weights = as.vector(w)*pweights, family = family, offset=offset, ...), silent=TRUE)
-      if (class(fit)=="try-error"){
+      if (is(fit, "try-error")){
               stop("Singularity or Likelihood-Spike at iteration #",iter,".
               Check model specification,  enable spike protection or smooth among components.")
       }

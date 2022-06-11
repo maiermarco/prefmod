@@ -25,7 +25,7 @@ License:\tab{}\Sexpr[stage = build]{packageDescription(pkg = "prefmod", fields =
 }
 \references{
   Hatzinger, R., & Dittrich, R. (2012). \pkg{prefmod}: An R Package for Modeling Preferences Based on Paired Comparisons, Rankings, or Ratings.
-  \emph{Journal of Statistical Software, 48}(10), 1--31. \url{http://www.jstatsoft.org/v48/i10/}
+  \emph{Journal of Statistical Software, 48}(10), 1--31. \url{https://www.jstatsoft.org/v48/i10/}
 }
 \examples{
 # mini example with three Likert items and two subject covariates

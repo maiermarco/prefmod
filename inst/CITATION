@@ -12,13 +12,13 @@ citEntry(
   volume  = "48",
   number  = "10",
   pages   = "1--31",
-  url     = "http://www.jstatsoft.org/v48/i10/",
+  url     = "https://www.jstatsoft.org/v48/i10/",
 
   textVersion =
   paste0("Hatzinger, R., & Dittrich, R. (2012). ",
          "prefmod: An R Package for Modeling Preferences Based on Paired Comparisons, Rankings, or Ratings. ",
          "Journal of Statistical Software, 48(10), 1-31. ",
-         "http://www.jstatsoft.org/v48/i10/")
+         "https://www.jstatsoft.org/v48/i10/")
 )
 
 bibentry(

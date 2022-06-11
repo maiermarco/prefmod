@@ -1,6 +1,11 @@
 \name{NEWS}
 \title{News for Package \pkg{prefmod}}
 \encoding{UTF-8}
+\section{Changes in Version 0.8-35}{
+  \itemize{
+    \item Minor fixes and updated documentation.
+  }
+}
 \section{Changes in Version 0.8-34}{
   \itemize{
     \item Corrected the coding of the rating-scale items of the ISSP 2000.

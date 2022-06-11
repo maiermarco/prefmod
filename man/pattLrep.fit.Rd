@@ -58,10 +58,13 @@ pattLrep.fit(obj, nitems, tpoints = 1, formel = ~1, elim = ~1,
 \value{%
   \code{pattLrep.fit} returns an object of class \code{pattMod}.
   The function \code{\link{print}} (i.e., \code{\link{print.pattMod}}) can be used to print the results and the function \code{\link{patt.worth}} to produce a matrix of worth parameters.
-  An object of class \code{pattMod} is a list containing  the following components:
 
-  \item{}{main results of the fit like estimates (\code{coefficients}), log likelihood of the model (\code{ll}), log likelihood of the saturated model (\code{fl}), and the call}
-  \item{result}{a list of results from the fitting routine (see Value of \code{\link{nlm}}.}
+  An object of class \code{pattMod} is a list containing the following components:
+  \item{coefficients}{estimates}
+  \item{ll}{log-likelihood of the model}
+  \item{fl}{log-likelihood of the saturated model}
+  \item{call}{function call}
+  \item{result}{a list of results from the fitting routine (see Value of \code{\link{nlm}}).}
   \item{envList}{a list with further fit details like subject covariates design structure \code{covdesmat}, paired comparison response pattern matrix \code{Y}, etc.}
   \item{partsList}{%
     a list of the basic data structures for each subgroup defined by crossing all covariate levels and different missing value patterns.
