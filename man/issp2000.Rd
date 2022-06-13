@@ -28,10 +28,10 @@ The first six variables are items to be answered on a 5-point rating scale (Like
 \source{%
   ISSP Research Group (2003). \emph{International Social Survey Programme: Environment II -- ISSP 2000.} GESIS Data Archive, Cologne. ZA3440 Data file Version 1.0.0, \doi{10.4232/1.3440}\cr%
   \url{https://www.gesis.org/issp/modules/issp-modules-by-topic/environment/2000}
-  (\href{Usage regulations}{https://www.gesis.org/fileadmin/upload/dienstleistung/daten/umfragedaten/_bgordnung_bestellen/Usage_regulations.pdf})
+  (\href{https://www.gesis.org/fileadmin/upload/dienstleistung/daten/umfragedaten/_bgordnung_bestellen/Usage_regulations.pdf}{Usage regulations})
 }
 \references{%
-Dittrich, R., Francis, B.J., Hatzinger R., Katzenbeisser, W. (2007). A Paired Comparison Approach for the Analysis of Sets of Likert Scale Responses. \emph{Statistical Modelling}, Vol. 7, No. 1, 3--28.
+  Dittrich, R., Francis, B.J., Hatzinger R., Katzenbeisser, W. (2007). A Paired Comparison Approach for the Analysis of Sets of Likert Scale Responses. \emph{Statistical Modelling}, Vol. 7, No. 1, 3--28.
 }
 \examples{str(issp2000)}
 \keyword{datasets}

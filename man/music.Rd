@@ -44,7 +44,7 @@
  %%http://www.cpanda.org/cpanda/getDDI.xq?studyID=a00006#dataDscr
  %\url{http://www.cpanda.org/data/profiles/gss.html}\cr%
  %
-  Davis, J. A., Smith, T. W., \& Marsden, P. V. (2016)
+  Davis, J. A., Smith, T. W., & Marsden, P. V. (2016)
   \emph{General Social Survey, 1993, 1998, 2000, 2002 with Cultural, Information Security, and Freedom Modules [United States]. Inter-university Consortium for Political and Social Research [distributor].} \doi{10.3886/ICPSR35536.v2}
 }
 \examples{
