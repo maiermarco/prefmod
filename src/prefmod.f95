@@ -8,8 +8,10 @@
 
   subroutine calcs(ncomp, notnaidx, iout)
 
-    integer(kind = 4) izahl, ncomp, notnaidx
-    integer(kind = 4), dimension(2**ncomp) :: iout
+    use iso_c_binding
+
+    integer(C_INT32_T) izahl, ncomp, notnaidx
+    integer(C_INT32_T), dimension(2**ncomp) :: iout
 
     do izahl = 0, 2**ncomp - 1
       newbyte = 0
@@ -29,9 +31,11 @@
 
   subroutine calcs3(ncomp, notnaidx, iout)
 
-    integer(kind = 4) izahl, ncomp, notnaidx
-    integer(kind = 4), dimension(ncomp)    :: tern, terns
-    integer(kind = 4), dimension(3**ncomp) :: iout
+    use iso_c_binding
+
+    integer(C_INT32_T) izahl, ncomp, notnaidx
+    integer(C_INT32_T), dimension(ncomp)    :: tern, terns
+    integer(C_INT32_T), dimension(3**ncomp) :: iout
     integer, dimension(3) :: nbd
     data nbd /0, 1, 2/
 
@@ -79,12 +83,14 @@
 
   subroutine pattp(ncomp, nobj, lambda, ppatt)
 
-    integer(kind = 4) ncomp, nobj, row
-    integer(kind = 4), dimension(ncomp, nobj) :: b
+    use iso_c_binding
+
+    integer(C_INT32_T) ncomp, nobj, row
+    integer(C_INT32_T), dimension(ncomp, nobj) :: b
     double precision, dimension(nobj - 1)   :: lambda
     double precision, dimension(2**ncomp)   :: ppatt
     double precision                        :: sumppatt
-    integer(kind = 4), dimension(ncomp) :: a, aa, x
+    integer(C_INT32_T), dimension(ncomp) :: a, aa, x
 
     do i = 1, ncomp
       do j = 1, nobj

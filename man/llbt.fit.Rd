@@ -21,7 +21,7 @@ llbt.fit(y, Xmodel, q, ncat, maxiter = 100)
   Usually, one of the design columns for object must be left out.
 }
 \references{%
-  Hatzinger, R., & Francis, B. (2004). \emph{Fitting paired comparison models in R.} \url{https://epub.wu.ac.at/id/eprint/740}
+  Hatzinger, R., & Francis, B. (2004). \emph{Fitting paired comparison models in R.} \doi{10.57938/d24575d2-77d2-4a7e-a63d-c787cc9d1906}
 }
 \author{Reinhold Hatzinger}
 \examples{
