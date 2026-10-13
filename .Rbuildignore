@@ -1,10 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-inst\/NEWSRd2txt\.R
-.*\.aux$
-.*\.log$
-.*\.bat$
-.*\.out$
-.*\.o$
-.*\.dll$
-.*\.bak$
+^inst\/NEWSRd2txt\.R$
+^.*\.(aux|log|bat|out|so|o|dll|bak)$
+^\.git
+^\.codecov\.yml$
