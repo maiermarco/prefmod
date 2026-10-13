@@ -1,7 +1,10 @@
 useDynLib("prefmod", .registration = TRUE)
 
-import("stats", "graphics", "gnm", "colorspace")
-importFrom("methods", "is")
+import("stats")
+import("graphics")
+import("gnm")
+import("colorspace")
+
 importFrom("grDevices", "xy.coords")
 importFrom("utils", "flush.console", "read.table", "write.table")
 
@@ -25,7 +28,8 @@ export("simR")
 
 S3method("print", "pattMod")
 S3method("print", "pattNPML")
-export("plot.wmat"); S3method("plot", "wmat")
 S3method("summary", "pattNPML")
 S3method("logLik", "pattNPML")
 S3method("nobs", "pattNPML")
+
+export("plot.wmat"); S3method("plot", "wmat")

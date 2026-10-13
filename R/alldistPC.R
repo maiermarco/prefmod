@@ -35,7 +35,7 @@
   if (is.function(family))
     family <- family()
   if (is.null(family$family)) {
-    stop("`family' not recognized")
+    stop("`family' not recognised")
   }
 
   data <- as.data.frame(data)   #0.34-1
@@ -45,7 +45,7 @@
 
   # Test for incorrect offset specification in formula object
   testoffset <- try(is.null(attr(terms(formula(mf)), "offset")), silent = TRUE)
-  if(!(is(testoffset, "try-error") || testoffset)){
+  if(!(inherits(testoffset, "try-error") || testoffset)){
       stop("Please specify offset as separate argument outside the model formula.")
   }
 
@@ -55,7 +55,7 @@
   mf$drop.unused.levels <- TRUE
   mf[[1]] <- as.name("model.frame")
   mf <- try(eval(mf,  parent.frame()), silent=TRUE)
-  ######if (is(mf, "try-error")){
+  ######if (inherits(mf, "try-error")){
   ######    if (!missing(offset) && length(offset) != ddim[1]) {
   ######    stop("Number of offsets is ", length(offset), ", should equal ", ddim[1], " (number of observations)")
   ######    }
@@ -279,7 +279,7 @@ if (!is.null(startp)) p<-startp
    #####   if (verbose){ cat(iter,"..") }
 
       fit <- try(glm.fit(x=XZ, y=Y, weights = as.vector(w)*pweights, family = family, offset=offset, ...), silent=TRUE)
-      if (is(fit, "try-error")){
+      if (inherits(fit, "try-error")){
               stop("Singularity or Likelihood-Spike at iteration #",iter,".
               Check model specification,  enable spike protection or smooth among components.")
       }

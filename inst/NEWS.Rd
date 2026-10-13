@@ -2,6 +2,11 @@
 \alias{NEWS}
 \title{News for Package \pkg{prefmod}}
 \encoding{UTF-8}
+\section{Changes in Version 0.8-38}{
+  \itemize{
+    \item Minor fixes.
+  }
+}
 \section{Changes in Version 0.8-37}{
   \itemize{
     \item Minor fixes.

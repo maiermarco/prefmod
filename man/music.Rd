@@ -23,7 +23,7 @@
     \item{\code{folk}}{like or dislike folk music}
     \item{\code{gosp}}{like or dislike gospel music}
     \item{\code{jazz}}{like or dislike jazz}
-    \item{\code{lati}}{like or dislike latin music}
+    \item{\code{lati}}{like or dislike Latin music}
     \item{\code{mood}}{like or dislike easy listening music}
     \item{\code{newa}}{like or dislike new age music}
     \item{\code{oper}}{like or dislike opera}

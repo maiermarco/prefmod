@@ -144,7 +144,7 @@ wmat <- llbt.worth(res)
 plot(wmat)
 
 # object specific covariates
-LAT  <- c(0, 1, 1, 0, 1, 0)        # latin cities
+LAT  <- c(0, 1, 1, 0, 1, 0)        # Latin cities
 EC   <- c(1, 0, 1, 0, 0, 1)
 OBJ  <- data.frame(LAT, EC)
 des2 <- llbt.design(cemspc, nitems = 6, objcovs = OBJ, cat.scovs = "ENG")

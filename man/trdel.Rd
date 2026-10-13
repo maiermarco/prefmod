@@ -8,7 +8,7 @@
   The modes were computer-based (\code{CO}), TV-based (\code{TV}), paper-based (\code{PA}), audio-based (\code{AU}) and classroom-based (\code{CL}) training.
   Study participants were unemployed persons in the labour market training of the Austrian labour market service (AMS).
   To account for trainee characteristics that might affect the preference order the variables gender, age, and learning personality type were recorded.
-  These variables were coded as \code{sex} (1 male, 2 female), \code{age} (numeric in years), \code{ltype} (1 accomodator, 2 diverger, 3 converger, 4 assimilator).
+  These variables were coded as \code{sex} (1 male, 2 female), \code{age} (numeric in years), \code{ltype} (1 accommodator, 2 diverger, 3 converger, 4 assimilator).
   The learning personality types were identified from a questionnaire.
 }
 \usage{trdel}
@@ -19,7 +19,7 @@
       paired comparisons in standard order: \code{CO:TV}, \code{CO:PA}, etc.\cr%
       \code{1} first object preferred, \code{2} second object preferred.%
     }
-    \item{\code{ltype}}{learning types: (1) accomodator, (2) diverger, (3) converger, (4) assimilator}
+    \item{\code{ltype}}{learning types: (1) accommodator, (2) diverger, (3) converger, (4) assimilator}
     \item{\code{age}}{numeric in years}
     \item{\code{sex}}{(1) male, (2) female}
   }

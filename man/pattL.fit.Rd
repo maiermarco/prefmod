@@ -41,7 +41,7 @@ pattL.fit(obj, nitems, formel = ~1, elim = ~1, resptype = "rating",
   However, \code{elim} specifies the basic contingency table to be set up but does not specify any covariates to be fitted.
   This is done using \code{formel}.
   If, e.g., \code{elim = ~SEX} but \code{formel = ~1}, then the table is set up as if \code{SEX} would be fitted but only one global preference scale is computed.
-  This feature allows for the succesive fitting of nested models to enable the use of deviance differences for model selection (see example below).
+  This feature allows for the successive fitting of nested models to enable the use of deviance differences for model selection (see example below).
 }
 \section{Input Data}{%
   The responses have to be coded as consecutive integers starting with 1 (or 0).

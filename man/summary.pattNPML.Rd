@@ -3,7 +3,7 @@
 \alias{summary.pattNPML}
 \alias{print.pattNPML}
 \alias{BIC.pattNPML}
-\title{Summarizing finite mixture regression fits}
+\title{Summarising finite mixture regression fits}
 \description{%
   These functions are the \code{summary}, \code{print}, and \code{BIC} methods for objects of type \code{pattNPML}.
 }

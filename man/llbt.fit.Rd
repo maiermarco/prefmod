@@ -20,6 +20,14 @@ llbt.fit(y, Xmodel, q, ncat, maxiter = 100)
   Since there is no extrinsic aliasing the matrix must have full rank.
   Usually, one of the design columns for object must be left out.
 }
+\value{
+  \code{llbt.fit()} returns a dataframe with these columns:
+  
+  \item{Estimate}{[numeric] estimates}
+  \item{Std. Error}{[numeric] standard errors}
+  \item{z}{[numeric] \eqn{z}{z}-values}
+  \item{P(z)}{[numeric] \eqn{p}{p}-values}
+}
 \references{%
   Hatzinger, R., & Francis, B. (2004). \emph{Fitting paired comparison models in R.} \doi{10.57938/d24575d2-77d2-4a7e-a63d-c787cc9d1906}
 }
