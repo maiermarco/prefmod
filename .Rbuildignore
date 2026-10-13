@@ -1,6 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^inst\/NEWSRd2txt\.R$
+^inst\/(NEWSRd2txt\.R|WORDLIST.+)$
 ^.*\.(aux|log|bat|out|so|o|dll|bak)$
-^\.git
+.*(\.gitattributes|\.gitignore|\.tgitconfig)$
+^\.git$
+^\.github$
+^revdep$
 ^\.codecov\.yml$
