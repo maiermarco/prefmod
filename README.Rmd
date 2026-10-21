@@ -8,14 +8,17 @@ output:
 #
 # <!-- README.md is generated from README.Rmd. Please edit that file -->
 #
+options(width = 200L)
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
     fig.path = "man/figures/README-"
   )
+
+this_pkg <- read.dcf("DESCRIPTION")[1L, ]
 ```
 
-# prefmod
+# `r this_pkg["Package"]`: `r this_pkg["Title"]` in R
 
 ```{r, include = FALSE}
 
@@ -25,6 +28,7 @@ knitr::opts_chunk$set(
 [![CRAN Version](https://www.r-pkg.org/badges/version-last-release/prefmod)](https://cran.r-project.org/package=prefmod)
 [![CRAN downloads per month](https://cranlogs.r-pkg.org/badges/prefmod)](https://cran.r-project.org/package=prefmod)
 [![CRAN grand-total](https://cranlogs.r-pkg.org/badges/grand-total/prefmod)](https://cran.r-project.org/package=prefmod)
+[![CodeFactor](https://www.codefactor.io/repository/github/maiermarco/prefmod/badge)](https://www.codefactor.io/repository/github/maiermarco/prefmod)
 [![Code coverage](https://codecov.io/gh/maiermarco/prefmod/branch/master/graph/badge.svg)](https://codecov.io/gh/maiermarco/prefmod)
 [![GitHub Actions Check and Code Coverage](https://github.com/maiermarco/prefmod/actions/workflows/R-CMD-check+covr.yml/badge.svg)](https://github.com/maiermarco/prefmod/actions/workflows/R-CMD-check+covr.yml)
 ```{r, include = FALSE}
@@ -32,3 +36,7 @@ knitr::opts_chunk$set(
 # <!-- badges: end -->
 
 ```
+
+Version: `r this_pkg["Version"]` (`r this_pkg["Date"]`)
+
+`r format(eval(parse(text=this_pkg["Authors@R"])), style = "md")`
