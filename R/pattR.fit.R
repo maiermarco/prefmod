@@ -48,9 +48,9 @@ pattR.fit <- function(
     # covs     <- as.data.frame(dat[, (nobj + 1L):ncol(dat)])
     ## instead of the above rh 2011-05-13
     formel.names <- attr(terms(as.formula(formel)), "term.labels")
-    formel.names <- unique(unlist(strsplit(formel.names, ":"))) # 2011-08-31 remove interaction terms
+    formel.names <- unique(unlist(strsplit(formel.names, ":", fixed = TRUE))) # 2011-08-31 remove interaction terms
     elim.names   <- attr(terms(as.formula(elim)), "term.labels")
-    elim.names   <- unique(unlist(strsplit(elim.names, ":")))     # 2011-08-31 remove interaction terms
+    elim.names   <- unique(unlist(strsplit(elim.names, ":", fixed = TRUE)))     # 2011-08-31 remove interaction terms
     covnames     <- unique(c(formel.names, elim.names))
     covs         <- as.data.frame(dat[, covnames])
   } else {
@@ -58,14 +58,14 @@ pattR.fit <- function(
   }
   
   # for rankings: at least one item not NA
-  idx <- apply(dat[, 1L:nobj], 1L, function(x){ sum(!is.na(x)) > 0L })
+  idx <- apply(dat[, seq_len(nobj)], 1L, function(x){ sum(!is.na(x)) > 0L })
   dat <- dat[idx, ]
   
   # check for proper ranks
-  nodups <- apply(dat[, 1L:nobj], 1L, function(x){ max(table(x)) == 1L })
+  nodups <- apply(dat[, seq_len(nobj)], 1L, function(x){ max(table(x)) == 1L })
   dups   <- !nodups
   if(sum(dups) > 0L){
-    norankslines <- (1L:nrow(dat))[dups]
+    norankslines <- seq_len(nrow(dat))[dups]
     cat("Warning:\n\timproper ranks in lines", norankslines, " - removed from data\n")
     dat <- dat[nodups, ]
     # if(!is.null(covs)) covs <- covs[nodups, ] ## replaced 20-08-09
@@ -76,14 +76,14 @@ pattR.fit <- function(
   dat <- ifelse(is.na(dat), 99999L, dat) # if removed only comparisons between chosem then reverse results in -lambda
   
   pc.dat <- NULL
-  for(j in 2L:nobj){
-    for(i in 1L:(j - 1L)){
+  for(j in seq.int(2L, nobj)){
+    for(i in seq_len(j - 1L)){
       pc.dat <- cbind(pc.dat, as.numeric(dat[, i] > dat[, j]))
     }
   }
   pc.notnaidx <- NULL
-  for(j in 2L:nobj){
-    for(i in 1L:(j - 1L)){
+  for(j in seq.int(2L, nobj)){
+    for(i in seq_len(j - 1L)){
       pc.notnaidx <- cbind(pc.notnaidx, dat[, i] != dat[, j])   # which values are not missing -> TRUE
     }
   }
@@ -110,10 +110,10 @@ pattR.fit <- function(
 ######################################
   
   ## option for obj.names added
-  if(is.null(obj.names)) ENV$obj.names <- varnames[1L:nobj] else ENV$obj.names <- obj.names[1L:nobj]
+  if(is.null(obj.names)) ENV$obj.names <- varnames[seq_len(nobj)] else ENV$obj.names <- obj.names[seq_len(nobj)]
   
   if(NItest)
-    if(!any(is.na(dat)))
+    if(!anyNA(dat))
       stop("Test for ignorable missing cannot be performed - no NA values!")
   
   ENV$Y <- ifelse(Rpatternmat(nobj) > 0, 1, -1) # pattern matrix
@@ -175,7 +175,7 @@ pattR.fit <- function(
       envList      = envList,
       partsList    = partsList
     )
-  class(outputobj) <- c("pattMod")                         #class: pattern model
+  class(outputobj) <- "pattMod"                         #class: pattern model
   
   outputobj
 

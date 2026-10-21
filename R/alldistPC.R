@@ -35,7 +35,7 @@ alldistPC <- function(
   if (is.function(family))
     family <- family()
   if (is.null(family$family)) {
-    stop("`family' not recognised")
+    stop("\"family\" not recognised")
   }
 
   data <- as.data.frame(data)   #0.34-1
@@ -50,7 +50,7 @@ alldistPC <- function(
   }
   
   m        <- match(c("formula", "data", "subset", "weights", "na.action", "etastart", "mustart", "offset"), names(mf), 0)
-  mf       <- mf[c(1, m)]
+  mf       <- mf[c(1L, m)]
   mf$drop.unused.levels <- TRUE
   mf[[1L]] <- as.name("model.frame")
   mf       <- try(eval(mf,  parent.frame()), silent = TRUE)
@@ -75,7 +75,7 @@ alldistPC <- function(
   if(is.null(offset))  offset  <- rep(0, N)
   if(is.null(weights)) weights <- rep(1, N)
 #####  data$offset <- numeric(1); data$pweights <- numeric(1)
-#####  data  <- if (is.matrix(Y)) data[dimnames(Y)[[1]], ] else  data[names(Y), ] #omit missing values
+#####  data  <- if (is.matrix(Y)) data[dimnames(Y)[[1L]], ] else  data[names(Y), ] #omit missing values
   data$offset   <- offset
   data$pweights <- weights
 
@@ -91,7 +91,7 @@ alldistPC <- function(
   ######if(family$family == "binomial"){
   ######         data$pweights <- data$pweights^Ym         # these are the actual case weights
   ######         YP <- binomial.expand(Y, 1, w0 / data$pweights)   # w0 / data$pweights are the actual pop. sizes
-  ######         Y  <- YP[[1]]; PY <- YP[[2]]; r <- YP[[3]]; n <- YP[[4]]
+  ######         Y  <- YP[[1L]]; PY <- YP[[2L]]; r <- YP[[3L]]; n <- YP[[4L]]
   ######}
 
   #w    <- data$pweights #  removed with version 0.32
@@ -137,7 +137,7 @@ alldistPC <- function(
         call        = call,
         formula     = formula,
         random      = "none",
-        data        = list(subset(data, select = 1:ddim[2L])),
+        data        = list(subset(data, select = seq_len(ddim[2L]))),
         model       = list(model.matrix(fit)),
         weights     = list(w0),
         offset      = list(off0),
@@ -153,21 +153,21 @@ alldistPC <- function(
         lastglm     = list(fit),
         Misc        = list(list(lambda = lambda))
       )
-    class(fit) <- 'pattNPML'
+    class(fit) <- "pattNPML"
     return(fit)
-  } else if (!(k %in% 1:21)){
+  } else if (!(k %in% seq_len(21L))){
     stop("This choice of k is not supported.")
   }
 
 
   # Expand the response
   if(family$family == "binomial"){
-#####      YP <- binomial.expand(Y, k, rep(1, N)); Y <- YP[[1]]; PY <- YP[[2]]; r <- YP[[3]]; n <- YP[[4]]
+#####      YP <- binomial.expand(Y, k, rep(1, N)); Y <- YP[[1L]]; PY <- YP[[2L]]; r <- YP[[3L]]; n <- YP[[4L]]
   } else Y <- rep(Y, k)
 
 
   datak  <- expand(data, k)# expand data.
-  kindex <- rep(1:k, rep(N, k))# index for the mixtures, for version 0.31 or higher only used for allvc
+  kindex <- rep(seq_len(k), rep(N, k))# index for the mixtures, for version 0.31 or higher only used for allvc
   #tmp   <- hermite(k) # grab weights and abscissas
   tmp    <- gqz(k, minweight = 1e-14)  #from version 0.32-2
   #z0    <- tmp$z    # for GQ - masspoints
@@ -178,8 +178,8 @@ alldistPC <- function(
   rform  <- random
 
   #  Generate the random design matrix and append to fixed matrix
-  mform <- strsplit(as.character(random)[2], '\\|')[[1]]
-  mform <- gsub(' ', '', mform)
+  mform <- strsplit(as.character(random)[2L], split = "|", fixed = TRUE)[[1L]]
+  mform <- gsub(" ", "", mform, fixed = TRUE)
 
   if(length(mform) == 2L){ stop("Please use function allvc for two-level models") }
   
@@ -187,26 +187,26 @@ alldistPC <- function(
   offset   <- datak$offset
   pweights <- datak$pweights
 
-  if(random.distribution == 'np'){
+  if(random.distribution == "np"){
     # Nonparametric random effect
-#    X <- model.matrix(formula, datak)[, -1, drop = FALSE]
+#    X <- model.matrix(formula, datak)[, -1L, drop = FALSE]
     X <- model.matrix(formula, datak)[, , drop = FALSE]      ### intercept included
     datak$MASS <- gl(k, N)
-#    if (mform == '1') random <- formula(~MASS-1) else {
+#    if (mform == "1") random <- formula(~MASS-1) else {
 #        # Nonparametric random coefficient
-#        random <- formula(paste('~ MASS + ', paste(mform, 'MASS', sep = ":", collapse = '+'), '-1', sep = ''))
-    if(mform == '1') random <- formula(1) else {
+#        random <- formula(paste("~ MASS + ", paste(mform, "MASS", sep = ":", collapse = "+"), "-1", sep = ""))
+    if(mform == "1") random <- formula(1) else {
       # Nonparametric random coefficient
-#      random <- formula(paste('~ ', paste(mform, 'MASS', sep = ":", collapse = '+'), '-1', sep = ''))
-      random <- formula(paste('~ ', paste(paste("(", mform, ")", sep = ''), 'MASS', sep = ":", collapse = '+'), '-1', sep = ''))
+#      random <- formula(paste("~ ", paste(mform, "MASS", sep = ":", collapse = "+"), "-1", sep = ""))
+      random <- formula(paste("~ ", paste(paste("(", mform, ")", sep = ""), "MASS", sep = ":", collapse = "+"), "-1", sep = ""))
 #      random <- formula("~-1+a:MASS+b:MASS+c:MASS+d:MASS+e:MASS")
     }
   } else {
     X <- model.matrix(formula, datak)
-    if (mform == '1') {
+    if (mform == "1") {
       random <- formula(~ z - 1 )
     } else {
-      stop("random coefficients only allowed with option 'np'")
+      stop("random coefficients only allowed with option \"np\"")
     }
   }
 
@@ -222,9 +222,9 @@ alldistPC <- function(
   if(random.distribution == "np"){
     tol <- max(min(tol, 1), 1 - damp)  #For tol > 1 or damp = F no Damping
     if(length(fit$coef) == 1L){
-      followmass <- matrix(Eta[(1L:k) * N], 1L, k) - offset[(1L:k) * N]
+      followmass <- matrix(Eta[seq_len(k) * N], 1L, k) - offset[seq_len(k) * N]
     } else {
-      followmass <- matrix(fit$coef[1L] + sz[(1L:k) * N], 1, k)
+      followmass <- matrix(fit$coef[1L] + sz[seq_len(k) * N], 1L, k)
     }
   } else {
     followmass <- NULL
@@ -248,7 +248,7 @@ alldistPC <- function(
 if(!is.null(startp)) p <- startp
 #cat("RANDOM STARTING PROPORTIONS:", p, "\n")
 ############################################################
-  tmp <- weightslogl.calc.w(p, matrix(f, ncol = k), pweights[1:N])
+  tmp <- weightslogl.calc.w(p, matrix(f, ncol = k), pweights[seq_len(N)])
   w   <- tmp$w
 #### new randow starts ############## 2011-11-11
   w[, ] <- runif(length(w))
@@ -264,7 +264,7 @@ if(!is.null(startp)) p <- startp
   
   p.iter <- 0
   
-  while (iter <= EMmaxit && (!converged || (iter <= 9 && random.distribution == 'np' && damp && (family$family == "gaussian" && sdev.miss || family$family == "Gamma" && shape.miss)  ))){
+  while (iter <= EMmaxit && (!converged || (iter <= 9 && random.distribution == "np" && damp && (family$family == "gaussian" && sdev.miss || family$family == "Gamma" && shape.miss)  ))){
   ##########Start of EM ##########
     
     # print dot at each iteration (max 50/line)
@@ -287,7 +287,7 @@ if(!is.null(startp)) p <- startp
     }
     
     if(random.distribution == "np"){   #Save EM Trajectories
-      masspoint  <- fit$coef[l0:(l0 + k - 1L)]
+      masspoint  <- fit$coef[seq.int(l0, l0 + k - 1L)]
       followmass <- rbind(followmass, masspoint)
     }
     
@@ -299,11 +299,11 @@ if(!is.null(startp)) p <- startp
 ######## if(sdev.miss){ sdev <- sqrt(sum((as.vector(w) * pweights) * (Y - Mu)^2) / sum(as.vector(w) * pweights)) }
 ######## sdevk <- rep(sdev, k)
 ######## if(lambda != 0){
-########   for(l in 1:k){
-########     wk        <- matrix(1, k, N)
-########     wk[1:k, ] <- dkern(1:k, l, k, lambda)
-########     wk <- t(wk)
-########     sdevk[l] <- sqrt(sum(wk * as.vector(w) * pweights * (Y - Mu)^2) / sum(wk * as.vector(w) * pweights))
+########   for(l in seq_len(k)){
+########     wk               <- matrix(1, k, N)
+########     wk[seq_len(k), ] <- dkern(seq_len(k), l, k, lambda)
+########     wk               <- t(wk)
+########     sdevk[l]         <- sqrt(sum(wk * as.vector(w) * pweights * (Y - Mu)^2) / sum(wk * as.vector(w) * pweights))
 ########   }
 ########   sk <- rep(sdevk, rep(N, k))
 ######## } else {
@@ -317,11 +317,11 @@ if(!is.null(startp)) p <- startp
 ######## if(shape.miss){ shape <- (sum(as.vector(w) * pweights)) * 1 / sum(as.vector(w) * pweights * ((Y - fitted(fit)) / fitted(fit))^2) }
 ######## shapek <- rep(shape, k)
 ######## if(lambda != 0){
-########   for(l in 1:k){
-########     wk        <- matrix(1, k, N)
-########     wk[1:k, ] <- dkern(1:k, l, k, lambda)
-########     wk        <- t(wk)
-########     shapek[l] <- sum(wk * as.vector(w) * pweights) / sum(wk * as.vector(w) * pweights * ((Y - Mu) / Mu)^2)
+########   for(l in seq_len(k)){
+########     wk               <- matrix(1, k, N)
+########     wk[seq_len(k), ] <- dkern(seq_len(k), l, k, lambda)
+########     wk               <- t(wk)
+########     shapek[l]        <- sum(wk * as.vector(w) * pweights) / sum(wk * as.vector(w) * pweights * ((Y - Mu) / Mu)^2)
 ########   }
 ########   shk <- rep(shapek, rep(N, k))
 ######## } else {
@@ -341,10 +341,10 @@ if(!is.null(startp)) p <- startp
     
     
     # Calculate the component proportions from the weights
-    if(random.distribution == "np") p <- as.vector(apply(w * pweights, 2L, sum)) / sum(pweights[1:N]) #16-03-06
+    if(random.distribution == "np") p <- as.vector(apply(w * pweights, 2L, sum)) / sum(pweights[seq_len(N)]) #16-03-06
     
     # Calculate updated weights and loglikehood
-    tmp <- weightslogl.calc.w(p, f, pweights[1:N])
+    tmp <- weightslogl.calc.w(p, f, pweights[seq_len(N)])
     w   <- tmp$w
     ML.dev[iter + 1L] <- ifelse(is.na(tmp$ML.dev), Inf, tmp$ML.dev)
     if(ML.dev[iter + 1] > ML.dev0){ ml <- ml + 1 }  #only relevant for graphical output
@@ -352,7 +352,7 @@ if(!is.null(startp)) p <- startp
     iter <- iter + 1L
     
     # Likelihood Spike Protection
-    if(random.distribution != 'gq' && spike.protect != 0){
+    if(random.distribution != "gq" && spike.protect != 0){
       if(family$family == "gaussian" && abs(min(sdevk / (fit$coef[(length(fit$coef) - k + 1L):length(fit$coef)]))) < 0.000001 * spike.protect){ break }
       if(family$family == "Gamma" && abs(max(shapek / (fit$coef[(length(fit$coef) - k + 1L):length(fit$coef)]))) > 10^6 * spike.protect){ break }
     }
@@ -368,27 +368,27 @@ if(!is.null(startp)) p <- startp
 #####
 
   Deviance <- switch(family$family,
-      ###### "gaussian" = sdev^2 * ML.dev[iter] - sdev^2 * sum(data$pweights[1:N] * log(2 * pi * sdev^2)),
-      "poisson" = ML.dev[iter] + 2 * sum(data$pweights[1:N] * (-Y[1:N] + Y[1:N] * log(Y[1:N] + (Y[1:N] == 0)) - lfactorial(Y[1:N]))),
-      ###### "binomial" = ML.dev[iter] + 2 * sum(data$pweights[1:N] * (lfactorial(n) - lfactorial(r) - lfactorial(n - r) - n * log(n) + r * log(r + (r == 0)) + (n - r) * log(n - r + ((n - r) == 0)))[1:N]),
-      "Gamma"   = 1 / shape * ML.dev[iter] + 2 / shape * (sum(data$pweights[1:N]) * shape * (log(shape) - 1) - sum(data$pweights[1:N]) * lgamma(shape) - sum(data$pweights[1:N] * log(Y[1:N]))),
+      ###### "gaussian" = sdev^2 * ML.dev[iter] - sdev^2 * sum(data$pweights[seq_len(N)] * log(2 * pi * sdev^2)),
+      "poisson" = ML.dev[iter] + 2 * sum(data$pweights[seq_len(N)] * (-Y[seq_len(N)] + Y[seq_len(N)] * log(Y[seq_len(N)] + (Y[seq_len(N)] == 0)) - lfactorial(Y[seq_len(N)]))),
+      ###### "binomial" = ML.dev[iter] + 2 * sum(data$pweights[seq_len(N)] * (lfactorial(n) - lfactorial(r) - lfactorial(n - r) - n * log(n) + r * log(r + (r == 0)) + (n - r) * log(n - r + ((n - r) == 0)))[seq_len(N)]),
+      "Gamma"   = 1 / shape * ML.dev[iter] + 2 / shape * (sum(data$pweights[seq_len(N)]) * shape * (log(shape) - 1) - sum(data$pweights[seq_len(N)]) * lgamma(shape) - sum(data$pweights[seq_len(N)] * log(Y[seq_len(N)]))),
     )
   
   mass.points   <- masses <- NULL
   np            <- length(fit$coef)
   ebp           <- apply(w * matrix(fit$linear.predictor, N, k, byrow = FALSE), 1L, sum)  #Emp. Bayes Pred. (Aitkin, 96)
   ebp.fitted    <- family$linkinv(ebp)
-  ebp.residuals <- Y[1:N] - ebp.fitted
+  ebp.residuals <- Y[seq_len(N)] - ebp.fitted
   names(ebp)    <- names(ebp.fitted) <- names(ebp.residuals) <- names0
   if(is.na(fit$coefficients[np])){ length(fit$coefficients) <- np <- np - 1 } # if one variable is random and fixed
-  m <- seq(1, np)[substr(attr(fit$coefficients, 'names'), 1, 4) == 'MASS']
+  m <- seq_len(np)[substr(attr(fit$coefficients, "names"), 1L, 4L) == "MASS"]
   mass.points   <- fit$coefficients[m]
-  post.prob     <- matrix(w, nrow = N, byrow = FALSE, dimnames = list(names0, 1:k))
+  post.prob     <- matrix(w, nrow = N, byrow = FALSE, dimnames = list(names0, seq_len(k)))
 
-  if((plot.opt == 1 || plot.opt == 2) && par("mfrow")[1] > 2){ # Write tol values as plot title if alldist is called from tolfind:
+  if((plot.opt == 1 || plot.opt == 2) && par("mfrow")[1L] > 2){ # Write tol values as plot title if alldist is called from tolfind:
     plot.main <- substitute("tol" == tol, list(tol = tol))
   } else {
-    plot.main <- c("")
+    plot.main <- ""
   }
 
   if(plot.opt == 3 && random.distribution == "np"){
@@ -400,46 +400,46 @@ if(!is.null(startp)) p <- startp
       # Linear interpolation for initial cycles
       ML.dev[2:max(7, ml)] <- ML.dev0 + 1:max(6, ml - 1) / max(7, ml) * (ML.dev[max(8, ml + 1)] - ML.dev0)
     }
-    plot(0:(iter - 1), ML.dev, col = 1L, type = "l", xlab = "EM iterations", ylab = "-2logL", main = plot.main)
+    plot(seq.int(0L, iter - 1L), ML.dev, col = 1L, type = "l", xlab = "EM iterations", ylab = "-2logL", main = plot.main)
     if(verbose){ cat("Disparity trend plotted.\n") }
   }
   
   
   if(random.distribution == "np") {
     #masses <- apply(w, 2, mean)
-    masses <- as.vector(apply(w * pweights, 2L, sum)) / sum(pweights[1:N]) #16-03-05
-    names(masses) <- paste('MASS', 1:k, sep = "")
+    masses <- as.vector(apply(w * pweights, 2L, sum)) / sum(pweights[seq_len(N)]) #16-03-05
+    names(masses) <- paste("MASS", seq_len(k), sep = "")
     
     if(family$family == "binomial"){
-    #  R0 <- family$linkfun(PY[1:N])
+    #  R0 <- family$linkfun(PY[seq_len(N)])
     } else  {
-       R0 <- family$linkfun(Y[1:N])
+       R0 <- family$linkfun(Y[seq_len(N)])
     }
     
     #Residuals R= y - Xb
     #if (family$family=="binomial"){
-    #    R0 <- switch(family$link, "log"= log(PY[1:N]),
-    #                                     log(PY[1:N] / (1 - PY[1:N])))
+    #    R0 <- switch(family$link, "log"= log(PY[seq_len(N)]),
+    #                                     log(PY[seq_len(N)] / (1 - PY[seq_len(N)])))
     #}  else if (family$family=="poisson") {
-    #    R0 <- switch(family$link, "log"= log(Y[1:N]),
-    #                              "sqrt"=sqrt(Y[1:N]),
-    #                              "identity"=Y[1:N])
+    #    R0 <- switch(family$link, "log"= log(Y[seq_len(N)]),
+    #                              "sqrt"=sqrt(Y[seq_len(N)]),
+    #                              "identity"=Y[seq_len(N)])
     #} else if (family$family=="Gamma") {
-    #    R0 <- switch(family$link, "log"= log(Y[1:N]),
-    #                              "inverse"=1 / Y[1:N],
-    #                              "identity"=Y[1:N] )
+    #    R0 <- switch(family$link, "log"= log(Y[seq_len(N)]),
+    #                              "inverse"=1 / Y[seq_len(N)],
+    #                              "identity"=Y[seq_len(N)] )
     #} else {
-    #    R0 <- switch(family$link,  "log"= log(Y[1:N]),
-    #                               "inverse"=1 / Y[1:N],
-    #                               "identity"=Y[1:N])
+    #    R0 <- switch(family$link,  "log"= log(Y[seq_len(N)]),
+    #                               "inverse"=1 / Y[seq_len(N)],
+    #                               "identity"=Y[seq_len(N)])
     #}
     
     
     
     if(dim(X)[2L] > 0L){
-      R <- R0 - X[1:N, ] %*% matrix(fit$coef[1:dim(X)[2]]) - offset[1:N]
+      R <- R0 - X[seq_len(N), ] %*% matrix(fit$coef[seq_len(dim(X)[2L])]) - offset[seq_len(N)]
     } else {
-      R <- R0 - offset[1:N]
+      R <- R0 - offset[seq_len(N)]
     }
     R <- as.vector(R)
     names(R) <- names0
@@ -448,21 +448,21 @@ if(!is.null(startp)) p <- startp
     if(mform == "1" && any(is.finite(R))){
       ylim <- c(min(R[is.finite(R)]), max(R[is.finite(R)]))  #29/06/2006
       #ylim <- c(min(na.omit(R)), max(na.omit(R)))
-      #if(abs(ylim[1]) == Inf){ylim[1] <- min(followmass[, ])}
-      #if(abs(ylim[2]) == Inf){ylim[2] <- max(followmass[, ])}
+      #if(abs(ylim[1L]) == Inf){ylim[1L] <- min(followmass[, ])}
+      #if(abs(ylim[2L]) == Inf){ylim[2L] <- max(followmass[, ])}
     } else {
       ylim <- c(min(followmass[, ]), max(followmass[, ]))
     }
     
-    if(any(is.na(ylim)) & plot.opt > 1){
+    if(anyNA(ylim) && plot.opt > 1L){
       cat("Singularity: EM Trajectory plot not available.", "\n")
       plot.opt <- min(plot.opt, 1)
     }
     
     if(plot.opt == 2 || plot.opt == 3){
-      plot(0:(iter - 1), followmass[, 1L], col = 1, type = 'l', ylim = ylim, ylab = 'mass points', xlab = 'EM iterations',  main = plot.main )
-      for(i in 1:k){
-        lines(0:(iter - 1), followmass[, i], col = i)
+      plot(seq.int(0L, iter - 1L), followmass[, 1L], col = 1, type = "l", ylim = ylim, ylab = "mass points", xlab = "EM iterations",  main = plot.main )
+      for(i in seq_len(k)){
+        lines(seq.int(0L, iter - 1L), followmass[, i], col = i)
         if(mform == "1") points(rep(iter - 1, length(R)), R)
       }
       if(verbose){ cat("EM Trajectories plotted.\n") }
@@ -475,14 +475,14 @@ if(!is.null(startp)) p <- startp
         fit[c(8L, 9L)],
         disparity = ML.dev[iter],
         deviance = Deviance,
-        fit[12],
-        df.residual = N - np - k + 1,
-        df.null = N - 1,
-        fit[18],
+        fit[12L],
+        df.residual = N - np - k + 1L,
+        df.null = N - 1L,
+        fit[18L],
         call = call,
         formula = formula,
         random = rform,
-        ##  data = list(subset(data, select = 1:ddim[2])),
+        ##  data = list(subset(data, select = seq_len(ddim[2L]))),
         data = list(data),
         model = list(XZ),
         weights = list(w0),
@@ -492,9 +492,9 @@ if(!is.null(startp)) p <- startp
         sdev = list(list(sdev = sdev, sdevk = sdevk)),
         shape = list(list(shape = shape, shapek = shapek)),
         post.prob = list(post.prob),
-        post.int =  list(post.prob %*% mass.points[1:k]),
+        post.int =  list(post.prob %*% mass.points[seq_len(k)]),
         ebp = list(ebp),
-        EMiter = iter - 1,
+        EMiter = iter - 1L,
         EMconverged = converged,
         lastglm = list(fit),
         Misc = list(list(Disparity.trend = ML.dev, EMTrajectories = followmass, res = R, ylim = ylim, lambda = lambda, mform = mform))
@@ -502,21 +502,21 @@ if(!is.null(startp)) p <- startp
     class(fit) <- "pattNPML"
     
   ### else {
-  ###   mass.points <- fit$coef[1] + fit$coef[np] * z0
+  ###   mass.points <- fit$coef[1L] + fit$coef[np] * z0
   ###   fit <- c( fit[1],
   ###             residuals = list(ebp.residuals),
   ###             fitted.values = list(ebp.fitted),
-  ###             fit[c(8, 9)],
+  ###             fit[c(8L, 9L)],
   ###             disparity = ML.dev[iter],
   ###             deviance = Deviance,
   ###             fit[12],
   ###             df.residual = N - np,
-  ###             df.null = N - 1,
+  ###             df.null = N - 1L,
   ###             fit[18],
   ###             call = call,
   ###             formula = formula,
   ###             random = rform,
-  ###             data = list(subset(data, select = 1:ddim[2])),
+  ###             data = list(subset(data, select = seq_len(ddim[2L]))),
   ###             model = list(XZ),
   ###             weights = list(w0),
   ###             offset = list(off0),
@@ -525,14 +525,14 @@ if(!is.null(startp)) p <- startp
   ###             sdev = list(list(sdev = sdev, sdevk = sdevk)),
   ###             shape = list(list(shape = shape, shapek = shapek)),
   ###             post.prob = list(post.prob),
-  ###             post.int =  list(post.prob %*% mass.points[1:k]),
+  ###             post.int =  list(post.prob %*% mass.points[seq_len(k)]),
   ###             ebp = list(ebp),
-  ###             EMiter = iter - 1,
+  ###             EMiter = iter - 1L,
   ###             EMconverged = converged,
   ###             lastglm = list(fit),
   ###             Misc = list(list(Disparity.trend = ML.dev, lambda = lambda, mform = mform))
   ###        )
-  ###   class(fit) <- 'glmmGQ'
+  ###   class(fit) <- "glmmGQ"
   }
   
   fit

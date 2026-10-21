@@ -5,8 +5,8 @@ pcdesign <- function(nobj){
   obj   <- matrix(0, ncomp, nobj)
   row <- 1
   
-  for(j in 2L:nobj){
-    for(i in 1L:(j - 1L)){
+  for(j in seq.int(2L, nobj)){
+    for(i in seq_len(j - 1L)){
       obj[row, i] <-  1
       obj[row, j] <- -1
       row <- row + 1

@@ -20,9 +20,9 @@ plot.wmat <- function(
 
   # for proper spacing x-axis labels (labels are broken into lines at ":")
   if(length(grep(":", grnames))){
-    gr.lines <- unlist(strsplit(grnames[1L], ":"))
+    gr.lines <- unlist(strsplit(grnames[1L], split = ":", fixed = TRUE))
     ngrlin   <- length(gr.lines) - 0.5
-    grnames  <- gsub(":", "\n", grnames)
+    grnames  <- gsub(":", "\n", grnames, fixed = TRUE)
   } else ngrlin <- 1
 
   nobj    <- dim(coeff)[1L]
@@ -31,7 +31,7 @@ plot.wmat <- function(
 
   # plotsymbols and color
 
-  if(is.null(psymb)) psymb <- rep(16L, nobj) # psymb <- c(15:18, 21:25)[1L:nobj]
+  if(is.null(psymb)) psymb <- rep(16L, nobj) # psymb <- c(15:18, 21:25)[seq_len(nobj)]
 
   if(is.null(pcol))                  farbe <- rainbow_hcl(nobj)                                                 else
   if(length(pcol) > 1L)              farbe <- pcol                                                              else
@@ -40,7 +40,7 @@ plot.wmat <- function(
   if(pcol == "gray")                 farbe <- eval(call(paste(pcol, ".colors", sep = "", collapse = ""), nobj)) else
     farbe <- rainbow_hcl(nobj)
   
-  # gray(0:(nobj - 1) /  nobj)
+  # gray(seq.int(0L, nobj - 1L) / nobj)
   
   
   # farbe <- rainbow(26, s = 1, v = 1, start = 0, end = 1, gamma = 1)
@@ -58,7 +58,7 @@ plot.wmat <- function(
   title(main, outer = TRUE)
   box()
   axis(2L)
-  axis(1L, at = 1L:ngroups, labels = grnames, mgp = c(3, ngrlin, 0))
+  axis(1L, at = seq_len(ngroups), labels = grnames, mgp = c(3, ngrlin, 0))
   
   adj <- 1 / nchar(as.character(objnames))
   adj <- strwidth(as.character(objnames)) / 2
@@ -66,10 +66,10 @@ plot.wmat <- function(
   adj <- adj + d
   
   
-  for(i in 1L:ngroups){
+  for(i in seq_len(ngroups)){
     pm        <- rep(c(1, -1), nobj)
-    pm        <- pm[1L:nobj]                # plus/minus orientation of point labels
-    o         <- order(coeff[1L:nobj, i])
+    pm        <- pm[seq_len(nobj)]                # plus/minus orientation of point labels
+    o         <- order(coeff[seq_len(nobj), i])
     sadj      <- adj[o]
     sobjnames <- objnames[o]                # sorted obj names
     spsymb    <- psymb[o]                   # sorted plotsymbols

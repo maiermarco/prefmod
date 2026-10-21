@@ -2,6 +2,14 @@
 \alias{NEWS}
 \title{News for Package \pkg{prefmod}}
 \encoding{UTF-8}
+\section{Changes in Version 0.9-0}{
+  \itemize{
+    \item \code{bin2int()} now throws and error if \code{bin} contains more than 31 elements (causing and overflow).
+    \item Lots of improvements suggested by \CRANpkg{lintr}.
+    \item \CRANpkg{prefmod}'s DLL now unloads upon unloading the package.
+    \item Implemented \CRANpkg{testthat} tests.
+  }
+}
 \section{Changes in Version 0.8-38}{
   \itemize{
     \item Minor fixes.

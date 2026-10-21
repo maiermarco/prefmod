@@ -49,9 +49,9 @@ pattLrep.fit <- function(
     #covs <- as.data.frame(dat[, (nobj + 1L):ncol(dat)])
     ## instead of the above rh 2011-05-13
     formel.names <- attr(terms(as.formula(formel)), "term.labels")
-    formel.names <- unique(unlist(strsplit(formel.names, ":"))) # 2011-08-31 remove interaction terms
+    formel.names <- unique(unlist(strsplit(formel.names, ":", fixed = TRUE))) # 2011-08-31 remove interaction terms
     elim.names   <- attr(terms(as.formula(elim)), "term.labels")
-    elim.names   <- unique(unlist(strsplit(elim.names, ":")))     # 2011-08-31 remove interaction terms
+    elim.names   <- unique(unlist(strsplit(elim.names, ":", fixed = TRUE)))     # 2011-08-31 remove interaction terms
     covnames     <- unique(c(formel.names, elim.names))
     covs         <- as.data.frame(dat[, covnames])
   } else {
@@ -59,9 +59,9 @@ pattLrep.fit <- function(
   }
   
   # for ratings: at least two items not NA
-  idx <- apply(dat[, 1L:nobj], 1L, function(x) sum(!is.na(x)) > 1)
+  idx <- apply(dat[, seq_len(nobj)], 1L, function(x) sum(!is.na(x)) > 1)
   dat <- dat[idx, ]
-  dat <- as.data.frame(dat[, 1L:nobj])
+  dat <- as.data.frame(dat[, seq_len(nobj)])
   
   if(!is.null(covs)){
     covs <- as.data.frame(covs[idx, ])
@@ -79,10 +79,10 @@ pattLrep.fit <- function(
   #######################################
   
   ## option for obj.names added
-  if(is.null(obj.names)) ENV$obj.names <- varnames[1L:nobj] else ENV$obj.names <- obj.names[1L:nobj]
+  if(is.null(obj.names)) ENV$obj.names <- varnames[seq_len(nobj)] else ENV$obj.names <- obj.names[seq_len(nobj)]
   
   if(NItest)
-    if(!any(is.na(dat)))
+    if(!anyNA(dat))
       stop("Test for ignorable missing cannot be performed - no NA values!")
   
   datrng <- range(dat, na.rm = TRUE)
@@ -96,8 +96,8 @@ pattLrep.fit <- function(
   np  <- nrow(Y)                     # no patterns in Y
   npp <- np
   YL  <- Y
-  for(t in 1L:(tpoints - 1L)){
-    YL  <- do.call("rbind", lapply(1L:np, function(i) YL))   # stacks YL np times
+  for(t in seq_len(tpoints - 1L)){
+    YL  <- do.call("rbind", lapply(seq_len(np), function(i) YL))   # stacks YL np times
     YR  <- expand.mat(Y, rep(npp, np))                       # repeats each line of Y np^t times
     YL  <- cbind(YL, YR)
     npp <- npp * np
@@ -108,8 +108,8 @@ pattLrep.fit <- function(
   ## reduce datamatrix
   ## for each timepoint
   #dat.t <- NULL
-  dat.t <- as.data.frame(diffsred(dat[, 1L:nitems], nitems))
-  for(t in 2L:tpoints){
+  dat.t <- as.data.frame(diffsred(dat[, seq_len(nitems)], nitems))
+  for(t in seq.int(2L, tpoints)){
     from  <- nitems * (t - 1L) + 1L
     to    <- from + nitems - 1L
     dat.t <- cbind(dat.t, as.data.frame(diffsred(dat[, from:to], nitems)))
@@ -118,11 +118,11 @@ pattLrep.fit <- function(
   rm(dat.t)
   
   
-  ncomp <- choose(nitems, 2)
+  ncomp <- choose(nitems, 2L)
   # only global undecided
   if(undec){
-    ENV$U <- apply(ENV$Y[, 1L:ncomp], 1L, function(x) sum(x == 0))
-    for(t in 2L:tpoints){
+    ENV$U <- apply(ENV$Y[, seq_len(ncomp)], 1L, function(x) sum(x == 0))
+    for(t in seq.int(2L, tpoints)){
       from  <- ncomp * (t - 1L) + 1L
       to    <- from + ncomp - 1L
       ENV$U <- cbind(ENV$U, apply(ENV$Y[, from:to], 1L, function(x) sum(x == 0)))
@@ -147,7 +147,7 @@ pattLrep.fit <- function(
   if(ia){
     XI      <- NULL
     ilabels <- NULL
-    for(t in 1L:tpoints){
+    for(t in seq_len(tpoints)){
       from    <- ncomp * (t - 1L) + 1L
       to      <- from + ncomp - 1L
       depL    <- dependencies(nitems, ENV$Y[, from:to])
@@ -156,7 +156,7 @@ pattLrep.fit <- function(
     }
     #npars.ia <- tpoints * nitems * (nitems - 1L) * (nitems - 2L) / 2
     npars.ia <- length(ilabels)
-    ilabels <- paste(rep(paste("T", 1L:tpoints, ":", sep = ""), rep(npars.ia / tpoints, tpoints)), ilabels, sep = "")
+    ilabels <- paste(rep(paste("T", seq_len(tpoints), ":", sep = ""), rep(npars.ia / tpoints, tpoints)), ilabels, sep = "")
   } else {
     ENV$ilabels <- NULL
     npars.ia    <- 0
@@ -169,16 +169,16 @@ pattLrep.fit <- function(
   ENV$iaT <- iaT
   if(iaT){
     npars.iaT    <- ncomp * (tpoints - 1L)
-    ENV$XIT      <- do.call("cbind", lapply(1L:npars.iaT, function(i) ENV$Y[, i] * ENV$Y[, i + ncomp]))
-    ENV$iTlabels <- paste(paste("Comp", 1L:ncomp, sep = ""), paste("IT", rep(1L:(tpoints - 1L), rep(ncomp, tpoints - 1L)), rep(2L:(tpoints), rep(ncomp, tpoints - 1L)), sep = ""), sep = ":")
+    ENV$XIT      <- do.call("cbind", lapply(seq_len(npars.iaT), function(i) ENV$Y[, i] * ENV$Y[, i + ncomp]))
+    ENV$iTlabels <- paste(paste("Comp", seq_len(ncomp), sep = ""), paste("IT", rep(seq_len(tpoints - 1L), rep(ncomp, tpoints - 1L)), rep(seq.int(2L, tpoints), rep(ncomp, tpoints - 1L)), sep = ""), sep = ":")
   } else {
     ENV$iTlabels <- NULL
     npars.iaT    <- 0
   }
   
-  ncomp <- choose(nitems, 2)
-  X     <- -(ENV$Y[, 1L:ncomp] %*% pcdesign(nitems))[, -nitems]
-  for(t in 2L:tpoints){
+  ncomp <- choose(nitems, 2L)
+  X     <- -(ENV$Y[, seq_len(ncomp)] %*% pcdesign(nitems))[, -nitems]
+  for(t in seq.int(2L, tpoints)){
     from <- ncomp * (t - 1L) + 1L
     to   <- from + ncomp - 1L
     X    <- cbind(X, -(ENV$Y[, from:to] %*% pcdesign(nitems))[, -nitems])
@@ -221,7 +221,7 @@ pattLrep.fit <- function(
       envList      = envList,
       partsList    = partsList
     )
-  class(outputobj) <- c("pattMod")                         #class: pattern model
+  class(outputobj) <- "pattMod"                         #class: pattern model
   
   outputobj
 

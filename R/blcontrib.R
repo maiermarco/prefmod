@@ -6,7 +6,7 @@ blcontrib <- function(obj, p.patt){
 
 # ## only non 0 observations
 # n    <- obj$s[length(obj$s)]
-# idx  <- (1:length(obj$counts))[obj$count > 0]     # index which counts > 0
+# idx  <- seq_along(obj$counts)[obj$count > 0]     # index which counts > 0
 # idx2 <- obj$s %in% idx
 # s2   <- obj$s * idx2
 # # calculates probabilities for patterns by summation according to s
@@ -23,4 +23,5 @@ blcontrib <- function(obj, p.patt){
   fl     <- sum(log(p.cnts[p.cnts > 0]) * obj$counts[obj$counts > 0])
 
   list(ll = ll, fl = fl)
+
 }

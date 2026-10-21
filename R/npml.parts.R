@@ -1,6 +1,6 @@
 expand <- function(x, k){
   xx <- x
-  for(i in 2L:k) xx <- rbind(x, xx)
+  for(i in seq.int(2L, k)) xx <- rbind(x, xx)
   xx
 }
 
@@ -37,7 +37,7 @@ gauss.quad <- function(n, kind = "legendre", alpha = 0, beta = 0){
   if(n == 0L) return(list(nodes = numeric(0), weights = numeric(0)))
   
   kind <- match.arg(kind, c("legendre", "chebyshev1", "chebyshev2", "hermite", "jacobi", "laguerre"))
-  i    <- 1L:n
+  i    <- seq_len(n)
   i1   <- i[-n]
   
   switch(kind,
@@ -67,7 +67,7 @@ gauss.quad <- function(n, kind = "legendre", alpha = 0, beta = 0){
       muzero <- 2^(ab + 1) * gamma(alpha + 1) * gamma(beta + 1) / gamma(ab + 2)
       a      <- i
       a[1L]  <- (beta - alpha) / (ab + 2)
-      i2     <- 2:n
+      i2     <- seq.int(2L, n)
       abi    <- ab + 2 * i2
       a[i2]  <- (beta^2 - alpha^2) / (abi - 2) / abi
       b      <- i1
@@ -123,10 +123,10 @@ summary.pattNPML <- function(object, digits = max(3, getOption("digits") - 3), .
   
   np <- length(object$coefficients)
   if(np > 0L){
-    m <- seq(1, np)[substr(attr(object$coefficients, 'names'), 1, 4) == 'MASS']
+    m <- seq_len(np)[substr(attr(object$coefficients, "names"), 1L, 4L) == "MASS"]
     mass.points <- object$coefficients[m]
-    cat('\nCall: ', deparse(object$call), '\n', fill = TRUE)
-    cat('Coefficients')
+    cat("\nCall: ", deparse(object$call), "\n", fill = TRUE)
+    cat("Coefficients")
     cat(":\n")
     df.r <- object$lastglm$df.residual
 
@@ -135,55 +135,55 @@ summary.pattNPML <- function(object, digits = max(3, getOption("digits") - 3), .
           sum(object$lastglm$weights * object$lastglm$residuals^2, na.rm = TRUE) / df.r
         } else Inf
     lastglmsumm <- summary.glm(object$lastglm, dispersion = glm.dispersion)
-    fitcoef     <- matrix(lastglmsumm$coeff[, 1L:3L], ncol = 3L, dimnames = list(dimnames(lastglmsumm$coef)[[1L]], c(dimnames(lastglmsumm$coeff)[[2L]][1L:2L], "t value") ))  #03-08-06
+    fitcoef     <- matrix(lastglmsumm$coeff[, seq_len(3L)], ncol = 3L, dimnames = list(dimnames(lastglmsumm$coef)[[1L]], c(dimnames(lastglmsumm$coeff)[[2L]][seq_len(2L)], "t value") ))  #03-08-06
     print(fitcoef)
   } else {
-    cat('\nCall: ', deparse(object$call), '\n', fill = TRUE)
+    cat("\nCall: ", deparse(object$call), "\n", fill = TRUE)
     cat("No coefficients. \n")
   }
   
   p <- object$masses
-  #names(p) <- paste('MASS', seq(1, ncol(object$post.prob)), sep = "") # omitted from 0.42 on
-  dispersion <- 1    # now calculate dispersion in the sense of 'dispersion parameter':
+  #names(p) <- paste("MASS", seq_len(ncol(object$post.prob)), sep = "") # omitted from 0.42 on
+  dispersion <- 1    # now calculate dispersion in the sense of "dispersion parameter":
 
-  cat('\nMixture proportions:\n')
+  cat("\nMixture proportions:\n")
   print.default(format(p, digits), print.gap = 2, quote = FALSE)
 
   if(object$family$family == "gaussian"){
     dispersion <- (object$sdev$sdev)^2
     if(object$Misc$lambda <= 1 / length(object$masses)){
-      cat('\nComponent distribution - MLE of sigma:\t  ', format(signif(object$sdev$sdev, digits)), "\n")
+      cat("\nComponent distribution - MLE of sigma:\t  ", format(signif(object$sdev$sdev, digits)), "\n")
     } else {
-      cat('\nMLE of component standard deviations:\n')
+      cat("\nMLE of component standard deviations:\n")
       s <- object$sdev$sdevk
       names(s) <- names(p)
       print.default(format(s, digits), print.gap = 2L, quote = FALSE)
-      cat('\n')
+      cat("\n")
     }
   } else if(object$family$family == "Gamma"){
     dispersion <- 1 / object$shape$shape
     if(object$Misc$lambda <= 1 / length(object$masses)){
-      cat('\nComponent distribution - MLE of shape parameter:\t  ', format(signif(object$shape$shape, digits)), "\n")
+      cat("\nComponent distribution - MLE of shape parameter:\t  ", format(signif(object$shape$shape, digits)), "\n")
     } else {
-      cat('\n MLE of component shape parameters:\n')
+      cat("\n MLE of component shape parameters:\n")
       s <- object$shape$shapek
       names(s) <- names(p)
       print.default(format(s, digits), print.gap = 2L, quote = FALSE)
-      cat('\n')
+      cat("\n")
     }
-  } else cat('\n')
+  } else cat("\n")
 
-  ###  cat('Random effect distribution - standard deviation:\t  ', format(object$rsdev), '\n\n') # 03/09/07
-  ##cat('\n')
+  ###  cat("Random effect distribution - standard deviation:\t  ", format(object$rsdev), "\n\n") # 03/09/07
+  ##cat("\n")
 
-  cat('Deviance:\t   ', format(round(object$deviance, digits = 2L)), "\n")
-  cat('-2 log L:\t   ', format(round(object$disparity, digits = 2L)))
+  cat("Deviance:\t   ", format(round(object$deviance, digits = 2L)), "\n")
+  cat("-2 log L:\t   ", format(round(object$disparity, digits = 2L)))
   conv <- object$EMconverged
   if(conv != "none"){
     cnv <- ifelse(conv, "", "no")
-    if(!is.null(object$post.prob)) cat('   ', cnv, 'EM convergence at iteration ', round(object$EMiter, 0L))
+    if(!is.null(object$post.prob)) cat("   ", cnv, "EM convergence at iteration ", round(object$EMiter, 0L))
   }
-  cat('\n')
+  cat("\n")
 
   if(np > 0){
     invisible(c("coefficients" = list(fitcoef), object[-1L], list(dispersion = dispersion), list(lastglmsumm = lastglmsumm)))
@@ -194,48 +194,48 @@ summary.pattNPML <- function(object, digits = max(3, getOption("digits") - 3), .
 
 
 
-print.pattNPML <- function(x, digits = max(3, getOption('digits') - 3), ...){
+print.pattNPML <- function(x, digits = max(3, getOption("digits") - 3), ...){
   np <- length(x$coefficients)
   # print(names(x))
-  if(np > 0){
-    m <- seq(1, np)[substr(attr(x$coefficients, 'names'), 1, 4) == 'MASS']
+  if(np > 0L){
+    m <- seq_len(np)[substr(attr(x$coefficients, "names"), 1L, 4L) == "MASS"]
     mass.points <- x$coefficients[m]
-    cat('\nCall: ', deparse(x$call), '\n', fill = TRUE)
-    cat('Coefficients')
+    cat("\nCall: ", deparse(x$call), "\n", fill = TRUE)
+    cat("Coefficients")
     cat(":\n")
-    print.default(format(x$coefficients[1L:np], digits = digits), print.gap = 2L, quote = FALSE) #;cat('\n')
+    print.default(format(x$coefficients[seq_len(np)], digits = digits), print.gap = 2L, quote = FALSE) #;cat("\n")
   } else {
-    cat('\nCall: ', deparse(x$call), '\n', fill = TRUE)
+    cat("\nCall: ", deparse(x$call), "\n", fill = TRUE)
     cat("No coefficients. \n")
   }
 
-  if(x$family$family == 'gaussian' && x$Misc$lambda <= 1 / length(x$masses)){ # print sigma only if it is constant over components
-    cat('Component distribution - MLE of sigma:\t  ', format(signif(x$sdev$sdev, digits)), '\n')   # 03/09/07
+  if(x$family$family == "gaussian" && x$Misc$lambda <= 1 / length(x$masses)){ # print sigma only if it is constant over components
+    cat("Component distribution - MLE of sigma:\t  ", format(signif(x$sdev$sdev, digits)), "\n")   # 03/09/07
   }
   
-  if(x$family$family == 'Gamma' && x$Misc$lambda <= 1 / length(x$masses)){ # print shape only if it is constant over components
-    cat('Component distribution - MLE of shape parameter:\t  ', format(signif(x$shape$shape, digits)), '\n')# 03/09/07
+  if(x$family$family == "Gamma" && x$Misc$lambda <= 1 / length(x$masses)){ # print shape only if it is constant over components
+    cat("Component distribution - MLE of shape parameter:\t  ", format(signif(x$shape$shape, digits)), "\n")# 03/09/07
   }
 
-  ###  cat('Random effect distribution - standard deviation:\t  ', format(x$rsdev), '\n\n') # 03/09/07
-  cat('\n')
+  ###  cat("Random effect distribution - standard deviation:\t  ", format(x$rsdev), "\n\n") # 03/09/07
+  cat("\n")
 
   if(!is.null(x$post.prob)){
     p <- x$masses
-    # names(p) <- paste('MASS', seq(1, ncol(x$post.prob)), sep = '') # omitted from 0.42
-    cat('Mixture proportions')
+    # names(p) <- paste("MASS", seq_len(ncol(x$post.prob)), sep = "") # omitted from 0.42
+    cat("Mixture proportions")
     cat(":\n")
     print.default(format(p, digits), print.gap = 2L, quote = FALSE)
-    cat('\n')
+    cat("\n")
   }
-  cat('Deviance:\t   ', format(round(x$deviance, digits = 2L)), "\n")
-  cat('-2 log L:\t   ', format(round(x$disparity, digits = 2L)))
+  cat("Deviance:\t   ", format(round(x$deviance, digits = 2L)), "\n")
+  cat("-2 log L:\t   ", format(round(x$disparity, digits = 2L)))
   conv <- x$EMconverged
   if(conv != "none"){
     cnv <- ifelse(conv, "", "no")
-    if(!is.null(x$post.prob)) cat('   ', cnv, 'EM convergence at iteration ', round(x$EMiter, 0L))
+    if(!is.null(x$post.prob)) cat("   ", cnv, "EM convergence at iteration ", round(x$EMiter, 0L))
   }
-  cat('\n')
+  cat("\n")
   invisible(x)
 }
 

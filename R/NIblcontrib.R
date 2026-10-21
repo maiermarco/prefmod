@@ -18,7 +18,7 @@ NIblcontrib <- function(obj, lambda, X, nobj, ENV){
       XX     <- cbind(X, RBstar[, ENV$Malph])   # lambdas, alpha_i
     }
     if(ENV$MISbeta){
-      YRBstar <- do.call(cbind, lapply(1L:(nobj), function(i){ RBstar[, i] * ENV$Y[, i] })) # betas
+      YRBstar <- do.call(cbind, lapply(seq_len(nobj), function(i){ RBstar[, i] * ENV$Y[, i] })) # betas
       XX      <- cbind(X, RBstar[, ENV$Malph], YRBstar[, ENV$Mbeta])  # lambdas, alpha_i. beta_i
     }
   }
@@ -28,7 +28,7 @@ NIblcontrib <- function(obj, lambda, X, nobj, ENV){
     if(ENV$MISalpha)
       XX <- cbind(X, R[, ENV$Malph])
     if(ENV$MISbeta){
-      # YR <- do.call("cbind", lapply((1:ENV$ncomp)[ENV$Mbeta], function(i) Y[, i] * R[, i])) # design matrix YR
+      # YR <- do.call("cbind", lapply(seq_len(ENV$ncomp)[ENV$Mbeta], function(i) Y[, i] * R[, i])) # design matrix YR
       YR <- ENV$Y[, ENV$Mbeta] * R[, ENV$Mbeta] # design matrix YR
       XX <- cbind(X, R[, ENV$Malph], YR)
     }

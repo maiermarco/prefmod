@@ -71,14 +71,14 @@ splitCovs <- function(dat, covs, formel, elim, ENV){
 #                                                                             # now obsolete: 23.11.09
 #   enam <- colnames(elimdesmat)                                              # had to be introduced
 #   cnam <- colnames(covdesmat)                                               # since terms in
-#   nam.elim <- sapply(1L:ncol(elimdesmat),                                   # interactions
+#   nam.elim <- sapply(seq_len(ncol(elimdesmat)),                             # interactions
 #                 function(i){                                                #
-#                   txt <- sort(unlist(strsplit(enam[i], ":")))               # may have different
+#                   txt <- sort(unlist(strsplit(enam[i], ":", fixed = TRUE))) # may have different
 #                   paste(txt, collapse = ":")                                # order in elim and formel
 #                 })                                                          # correct in R 2.6.x and
-#   nam.cov <- sapply(1L:ncol(covdesmat),                                     # maybe in 2.7.0
+#   nam.cov <- sapply(seq_len(ncol(covdesmat)),                               # maybe in 2.7.0
 #                function(i){                                                 #
-#                  txt <- sort(unlist(strsplit(cnam[i], ":")))                #
+#                  txt <- sort(unlist(strsplit(cnam[i], ":", fixed = TRUE)))  #
 #                  paste(txt, collapse = ":")                                 # now obsolete
 #                })                                                           #
 #                                                                             #
@@ -87,7 +87,7 @@ splitCovs <- function(dat, covs, formel, elim, ENV){
     model.terms <- colnames(elimdesmat) %in% colnames(covdesmat)              # had been replaced
     
     
-    for(i in 1L:length(cList)) cList[[i]] <- c(cList[i], list(cov = elimdesmat[i, model.terms]))
+    for(i in seq_along(cList)) cList[[i]] <- c(cList[i], list(cov = elimdesmat[i, model.terms]))
     ENV$covdesmat <- elimdesmat[, model.terms]
     if(formel != "~1") colnames(ENV$model.covs) <- maineffect.terms.frml      # order of elim terms for factor matrix to properly label worth matrix
   

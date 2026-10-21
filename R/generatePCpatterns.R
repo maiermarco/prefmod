@@ -6,10 +6,10 @@ generatePCpatterns <- function(env2){
 # CASE PAIRED COMPARISONS
   
   # data: not necessary here to calculate differences
-  #       but shift data to 0:(ncatPC - 1)
+  #       but shift data to seq.int(0L, ncatPC - 1L)
   
   ncomp    <- get("ncomp", get("ENV", environment(patt.design)))
-  diffsdat <- get("dat", get("ENV", environment(patt.design)))[, 1:ncomp]
+  diffsdat <- get("dat", get("ENV", environment(patt.design)))[, seq_len(ncomp)]
   # for PCs -1/0/1 or -2...2,      #rh 2011-03-31
   if((max(diffsdat) + min(diffsdat)) == 0) revert <- TRUE else revert <- FALSE  
   

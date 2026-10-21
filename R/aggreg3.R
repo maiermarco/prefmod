@@ -1,5 +1,5 @@
-aggreg3 <- function(x, ENV)  # x .. data
-{
+aggreg3 <- function(x, ENV){   # x .. data
+  
   # aggregate data - calculate counts for patterns
   notnaidx <- !is.na(x[1L, ])  # which columns are not missing
   compdat  <- x[, notnaidx]    # remove NA columns from data

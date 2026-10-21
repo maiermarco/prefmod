@@ -1,5 +1,5 @@
-aggregR <- function(x, ENV)  # x .. data
-{
+aggregR <- function(x, ENV){  # x .. data
+  
   notnaidx <- !is.na(x[1L, ])             # which columns are not missing
   cdat     <- as.matrix(x[, notnaidx])       # complete data - remove NA columns from data
   cdatStr  <- apply(cdat, 1L, function(x) paste(x, sep = "", collapse = ""))
@@ -8,8 +8,8 @@ aggregR <- function(x, ENV)  # x .. data
   nobj    <- ENV$Rnobj
   Rpatt   <- perm(nobj, nobj)
   pc.patt <- NULL
-  for(j in 2L:nobj){
-    for(i in 1L:(j - 1L)){
+  for(j in seq.int(2L, nobj)){
+    for(i in seq_len(j - 1L)){
       pc.patt <- cbind(pc.patt, as.numeric(Rpatt[, i] > Rpatt[, j]))
     }
   }

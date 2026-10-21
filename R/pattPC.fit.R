@@ -50,9 +50,9 @@ pattPC.fit <- function(
     #covs     <- as.data.frame(dat[, (nobj + 1L):ncol(dat)])
     ## instead of the above rh 2011-05-13
     formel.names <- attr(terms(as.formula(formel)), "term.labels")
-    formel.names <- unique(unlist(strsplit(formel.names, ":"))) # 2011-08-31 remove interaction terms
+    formel.names <- unique(unlist(strsplit(formel.names, ":", fixed = TRUE))) # 2011-08-31 remove interaction terms
     elim.names   <- attr(terms(as.formula(elim)), "term.labels")
-    elim.names   <- unique(unlist(strsplit(elim.names, ":")))     # 2011-08-31 remove interaction terms
+    elim.names   <- unique(unlist(strsplit(elim.names, ":", fixed = TRUE)))     # 2011-08-31 remove interaction terms
     covnames     <- unique(c(formel.names, elim.names))
     covs         <- as.data.frame(dat[, covnames])
   } else {
@@ -62,9 +62,9 @@ pattPC.fit <- function(
 
 
   # for ratings: at least two items not NA (> 1)
-  idx <- apply(dat[, 1L:ncomp], 1L, function(x){ sum(!is.na(x)) >= 1L })
+  idx <- apply(dat[, seq_len(ncomp)], 1L, function(x){ sum(!is.na(x)) >= 1L })
   dat <- dat[idx, ]
-  dat <- as.data.frame(dat[, 1L:ncomp])
+  dat <- as.data.frame(dat[, seq_len(ncomp)])
   
   if(!is.null(covs)){
     covs <- as.data.frame(covs[idx, ])
@@ -101,10 +101,10 @@ pattPC.fit <- function(
       ENV$obj.names <- obj.names
     } else {
       cat("\nobj.names inccorrectly specified - o1, o2, .. is used instead\n")
-      ENV$obj.names <- paste("o", 1L:nobj, sep = "")
+      ENV$obj.names <- paste("o", seq_len(nobj), sep = "")
     }
   } else {
-    ENV$obj.names <- paste("o", 1L:nobj, sep = "")
+    ENV$obj.names <- paste("o", seq_len(nobj), sep = "")
   }
   
   # missing values specifications
@@ -151,13 +151,13 @@ pattPC.fit <- function(
     #if(MISmodel %in% c("obj", "comp"))
     #   ENV$MISmod <- MISmodel
     #else
-    stop('\nMISmodel not correctly specified. Use "obj" or "comp"\n')
+    stop("\nMISmodel not correctly specified. Use \"obj\" or \"comp\"\n")
   }
   ENV$MISmod <- MISmodel
   
   
   if(NI)
-    if(!any(is.na(dat)))
+    if(!anyNA(dat))
       stop("no NA values - no nonresponse models !")
   
   if(ncat == 2){
@@ -242,7 +242,7 @@ pattPC.fit <- function(
       envList      = envList,
       partsList    = partsList
     )
-  class(outputobj) <- c("pattMod")                         #class: pattern model
+  class(outputobj) <- "pattMod"                         #class: pattern model
   
   outputobj
 

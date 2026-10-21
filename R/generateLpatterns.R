@@ -16,7 +16,7 @@ generateLpatterns <- function(env2){
   diffs    <- differences(patterns)         # all possible diference patterns
 
   ## for the time being responses are centered around 0
-  # shift data/patterns to 0:(ncatPC-1)
+  # shift data/patterns to seq.int(0L, ncatPC - 1L)
   #   diffs <- diffs - min(diffs)
   #   diffsdat <- diffsdat - min(diffsdat)
 

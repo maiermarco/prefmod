@@ -9,3 +9,4 @@ src/*.dll
 NEWS.md
 *.pot
 man/macros
+/src/symbols.rds

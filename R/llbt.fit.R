@@ -21,7 +21,7 @@ llbt.fit <- function(y, Xmodel, q, ncat, maxiter = 100){
     z          <- eta + (y - fv) / fv
     a22inv     <- 1 / colSums(matrix(fv, nrow = ncat))
     WX         <- fv * cbind(z, Xmodel)
-    A21        <- matrix(colSums(matrix(WX[, 1:(p + 1)], nrow = ncat)), ncol = p + 1)
+    A21        <- matrix(colSums(matrix(WX[, seq_len(p + 1L)], nrow = ncat)), ncol = p + 1L)
     A11        <- crossprod(cbind(z, Xmodel), WX)
     A22inv.A21 <- -a22inv * A21
     A.11       <- solve(A11 + crossprod(A21, A22inv.A21))
@@ -29,11 +29,11 @@ llbt.fit <- function(y, Xmodel, q, ncat, maxiter = 100){
     rm(A11, A21, a22inv, A22inv.A21, WX, z)
     
     pseudo.rss <- -1 / A.11[1L, 1L]
-    b.model    <- pseudo.rss * A.11[1L, 2L:(p + 1L)]
+    b.model    <- pseudo.rss * A.11[1L, seq.int(2L, p + 1L)]
     b.elim     <- pseudo.rss * A.21[, 1L]
     b          <- c(b.model, b.elim)
-    #se         <- sqrt(diag(A.11[2:(p + 1), 2:(p + 1)]) + pseudo.rss * A.11[2:(p + 1), 1] * A.11[2:(p + 1), 1]) #changed for case p == 1
-    se         <- sqrt(A.11[cbind(2L:(p + 1L), 2L:(p + 1L))] + pseudo.rss * A.11[2L:(p + 1L), 1L] * A.11[2L:(p + 1L), 1L])
+    #se         <- sqrt(diag(A.11[seq.int(2L, p + 1L), seq.int(2L, p + 1L)]) + pseudo.rss * A.11[seq.int(2L, p + 1L), 1L] * A.11[seq.int(2L, p + 1L), 1L]) #changed for case p == 1
+    se         <- sqrt(A.11[cbind(seq.int(2L, p + 1L), seq.int(2L, p + 1L))] + pseudo.rss * A.11[seq.int(2L, p + 1L), 1L] * A.11[seq.int(2L, p + 1L), 1L])
     rm(A.11, A.21)
     
     eta.model <- crossprod(t(Xmodel), b.model)
@@ -56,7 +56,7 @@ llbt.fit <- function(y, Xmodel, q, ncat, maxiter = 100){
   cat("Number of iterations:", iter, "\n")
   cat("\n")
   
-  bb <- b[1L:p]
+  bb <- b[seq_len(p)]
   coeftable <- as.data.frame(cbind(
       round(bb, 4),
       round(se, 4),
@@ -65,7 +65,7 @@ llbt.fit <- function(y, Xmodel, q, ncat, maxiter = 100){
     ))
   colnames(coeftable) <- c("Estimate", "Std. Error", "z", "P(z)")
   if(is.null(colnames(Xmodel))){
-    rownames(coeftable) <- paste("par", 1L:p, sep = "")
+    rownames(coeftable) <- paste("par", seq_len(p), sep = "")
   } else {
     rownames(coeftable) <- colnames(Xmodel)
   }

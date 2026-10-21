@@ -42,9 +42,9 @@ pattL.fit <- function(
     # covs     <- as.data.frame(dat[, (nobj + 1L):ncol(dat)])
     ## instead of the above rh 2011-05-13
     formel.names <- attr(terms(as.formula(formel)), "term.labels")
-    formel.names <- unique(unlist(strsplit(formel.names, ":"))) # 2011-08-31 remove interaction terms
+    formel.names <- unique(unlist(strsplit(formel.names, ":", fixed = TRUE))) # 2011-08-31 remove interaction terms
     elim.names   <- attr(terms(as.formula(elim)), "term.labels")
-    elim.names   <- unique(unlist(strsplit(elim.names, ":")))     # 2011-08-31 remove interaction terms
+    elim.names   <- unique(unlist(strsplit(elim.names, ":", fixed = TRUE)))     # 2011-08-31 remove interaction terms
     covnames     <- unique(c(formel.names, elim.names))
     covs         <- as.data.frame(dat[, covnames])
   } else {
@@ -52,9 +52,9 @@ pattL.fit <- function(
   }
 
   # for ratings: at least two items not NA
-  idx <- apply(dat[, 1L:nobj], 1L, function(x){ sum(!is.na(x)) > 1 })
+  idx <- apply(dat[, seq_len(nobj)], 1L, function(x){ sum(!is.na(x)) > 1 })
   dat <- dat[idx, ]
-  dat <- as.data.frame(dat[, 1L:nobj])
+  dat <- as.data.frame(dat[, seq_len(nobj)])
   
   if(!is.null(covs)){
     covs <- as.data.frame(covs[idx, ])
@@ -72,13 +72,13 @@ pattL.fit <- function(
 #######################################
   ## option for obj.names added
   if(is.null(obj.names)){
-    ENV$obj.names <- varnames[1:nobj]
+    ENV$obj.names <- varnames[seq_len(nobj)]
   } else {
-    ENV$obj.names <- obj.names[1:nobj]
+    ENV$obj.names <- obj.names[seq_len(nobj)]
   }
   
   if(NItest)
-    if(!any(is.na(dat)))
+    if(!anyNA(dat))
       stop("Test for ignorable missing cannot be performed - no NA values!")
   
   datrng <- range(dat, na.rm = TRUE)
@@ -146,7 +146,7 @@ pattL.fit <- function(
       envList      = envList,
       partsList    = partsList
     )
-  class(outputobj) <- c("pattMod")                         #class: pattern model
+  class(outputobj) <- "pattMod"                         #class: pattern model
   
   outputobj
 

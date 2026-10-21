@@ -6,11 +6,11 @@ diffsred <- function(x, nobj){
 # reduces diffs to -1/0/1                                    #
 ##############################################################
   
-  ncomp <- nobj * (nobj - 1) / 2
+  ncomp <- nobj * (nobj - 1L) / 2
   diffs <- matrix(c(0:0), nrow(x), ncomp)
   col <- 1
-  for(j in 2L:nobj){
-    for(i in 1L:(j - 1L)){
+  for(j in seq.int(2L, nobj)){
+    for(i in seq_len(j - 1L)){
       diffs[, col] <- ifelse(x[, i] > x[, j], 1, ifelse(x[, i] < x[, j], -1, 0))
       col <- col + 1
     }

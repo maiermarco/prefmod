@@ -46,9 +46,9 @@ llbtPC.fit <- function(
     covs <- NULL
   }
   # at least one comparison not NA
-  idx <- apply(dat[, 1L:ncomp], 1L, function(x){ sum(!is.na(x)) >= 1L })
+  idx <- apply(dat[, seq_len(ncomp)], 1L, function(x){ sum(!is.na(x)) >= 1L })
   dat <- dat[idx, ]
-  dat <- as.data.frame(dat[, 1L:ncomp])
+  dat <- as.data.frame(dat[, seq_len(ncomp)])
 
   if(!is.null(covs)){
     covs           <- as.data.frame(covs[idx, ])
@@ -84,10 +84,10 @@ llbtPC.fit <- function(
       ENV$obj.names <- obj.names
     } else {
       cat("\nobj.names inccorrectly specified - o1, o2, .. is used instead\n")
-      ENV$obj.names <- paste("o", 1L:nobj, sep = "")
+      ENV$obj.names <- paste("o", seq_len(nobj), sep = "")
     }
   } else {
-    ENV$obj.names <- paste("o", 1L:nobj, sep = "")
+    ENV$obj.names <- paste("o", seq_len(nobj), sep = "")
   }
   
   

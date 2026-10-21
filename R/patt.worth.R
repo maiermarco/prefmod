@@ -8,13 +8,13 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
   pattNPMLmodel   <- FALSE
   nclass          <- 1
   
-  if("pattMod" %in% class(fitobj)){
+  if(inherits(fitobj, "pattMod")){
     pattPCfitmodel <- TRUE
   } else if(!is.null(fitobj$call$design)){
     pattNPMLmodel <- TRUE
     dterm         <- deparse(fitobj$call$design)            ## unten nocheinmal
     design        <- tryCatch(get(dterm), error = function(e) FALSE)
-    if("pattNPML" %in% class(fitobj)){
+    if(inherits(fitobj, "pattNPML")){
       nclass          <- fitobj$call$k
       pattNPMLmodel   <- TRUE
       pattdesignmodel <- TRUE
@@ -22,28 +22,28 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
   } else if(!is.null(fitobj$call$data)){
     dterm  <- deparse(fitobj$call$data)            ## unten nocheinmal
     design <- tryCatch(get(dterm), error = function(e) FALSE)
-    if("pattdes" %in% class(design)) pattdesignmodel <- TRUE
+    if(inherits(design, "pattdes")) pattdesignmodel <- TRUE
   }
   
   if(!any(pattPCfitmodel, pattdesignmodel, pattNPMLmodel))
-    stop(paste("Model result must be either from patt*.fit or having used patt.design"))
+    stop("Model result must be either from patt*.fit or having used patt.design")
   
   
-  ### if("pattNPML" %in% class(fitobj)){
+  ### if(inherits(fitobj, "pattNPML")){
   ###   nclass          <- fitobj$call$k
   ###   pattNPMLmodel   <- TRUE
   ###   pattdesignmodel <- TRUE
   ###   design          <- fitobj$data
-  ###   if("pattdes" %in% class(design)) pattdesignmodel <- TRUE
+  ###   if(inherits(design, "pattdes")) pattdesignmodel <- TRUE
   ### } else {
   ###   pattdesignmodel <- FALSE
-  ###   pattPCfitmodel  <- ("pattMod" %in% class(fitobj))
+  ###   pattPCfitmodel  <- inherits(fitobj, "pattMod")
   ###   if(!pattPCfitmodel){
   ###     design <- fitobj$data            ## unten nocheinmal
-  ###     if("pattdes" %in% class(design)) pattdesignmodel <- TRUE
+  ###     if(inherits(design, "pattdes")) pattdesignmodel <- TRUE
   ###   }
   ###   if(pattdesignmodel == pattPCfitmodel)  # both FALSE
-  ###     stop(paste("Model result must be either from patt*.fit or having used patt.design"))
+  ###     paste("Model result must be either from patt*.fit or having used patt.design")
   ### }
   
   
@@ -64,7 +64,7 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
     objcovs     <- attr(design, "objcovs")
     objnames    <- c(objnames, objcovnames)
     
-    if("gnm" %in% class(fitobj)){
+    if(inherits(fitobj, "gnm")){
       fterm <- as.character(attr(fitobj$terms, "predictor"))
     } else {
       fterm <- attr(fitobj$terms, "term.labels")
@@ -117,12 +117,12 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
       if(length(subjcov.names) > 0L){   # subject variable in design matrix and in model
         # set up subj cov design
         if(pattNPMLmodel) levlist <- lapply(fitobj$data[subjcov.names], levels) else levlist <- lapply(fitobj$model[subjcov.names], levels)
-        maxlev <- sapply(levlist, length)
+        maxlev <- lengths(levlist)
       }
       
       if(nclass > 1L){                                 #  add "MASS" for pattNPML models
-        if(exists("levlist")) levlist$MASS <- paste(1L:nclass) else levlist <- list(MASS = paste(1L:nclass))
-        maxlev <- sapply(levlist, length)
+        if(exists("levlist")) levlist$MASS <- paste(seq_len(nclass)) else levlist <- list(MASS = paste(seq_len(nclass)))
+        maxlev <- lengths(levlist)
       }
       if(!exists("maxlev")){                      #subject variables in design matrix but none in model
         maxlev         <- 1
@@ -130,8 +130,8 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
       }
 
     } else if(nclass > 1L){                              # only classes no subject covariates
-      levlist <- list(MASS = paste(1L:nclass))
-      maxlev  <- sapply(levlist, length)
+      levlist <- list(MASS = paste(seq_len(nclass)))
+      maxlev  <- lengths(levlist)
 
     # no subject variables in design matrix
     } else {
@@ -140,7 +140,7 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
     
     # set up array
     array.dim       <- c(OBJ = length(objects), maxlev)
-    array.dimnames  <- lapply(array.dim, function(i) 1L:i)
+    array.dimnames  <- lapply(array.dim, function(i) seq_len(i))
     a               <- array(0, dim = array.dim, dimnames = array.dimnames)
     dimnames(a)$OBJ <- objects
     
@@ -148,7 +148,7 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
     
     ### extract relevant estimates
     est        <- coef(fitobj)
-    estnamlist <- lapply(names(est), strsplit, ":")
+    estnamlist <- lapply(names(est), strsplit, split = ":", fixed = TRUE)
     obj.in.est <- sapply(estnamlist, function(x){ any(objnames %in% unlist(x)) })
     est        <- est[obj.in.est]  # only model terms with obj
     estnamlist <- estnamlist[obj.in.est]
@@ -179,7 +179,7 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
 
       newest        <- NULL
       newestnamlist <- NULL
-      for(i in 1L:length(estnamlist.wosubj)){
+      for(i in seq_along(estnamlist.wosubj)){
         if(any(objcovnames %in% estnamlist.wosubj[[i]])){
           # new estnamlist elements
           newenlel      <- as.list(objects)
@@ -221,7 +221,7 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
     estmat[, 1L] <- objnum[which.obj.in.est]
 
     for(scovnam in subjcov.names){           # loop all subj covs
-      for(i in 1L:length(estnamlist)){        # loop all estimate terms
+      for(i in seq_along(estnamlist)){        # loop all estimate terms
         trms <- estnamlist[[i]][[1L]]           # extract single terms
         idx  <- grep(scovnam, trms)              # look which single term corresponds to current subj cov
         lev  <- 0
@@ -240,20 +240,20 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
       if(row[, scov] == 0L){
         #row <- expand.dfr(row, maxlev[scov])
         row <- row[rep(seq_len(nrow(row)), maxlev[scov]), ]
-        row[, scov] <- 1L:maxlev[scov]
+        row[, scov] <- seq_len(maxlev[scov])
       }
       row
     }
     
     for(scov in subjcov.names){
-      estmat.exp <- do.call("rbind", lapply(1L:nrow(estmat.exp), expand))
+      estmat.exp <- do.call("rbind", lapply(seq_len(nrow(estmat.exp)), expand))
     }
     e <- estmat.exp
     
     # array entries
-    for(i in 1L:nrow(e)){
-      a[e[i, 1L:(length(subjcov.names) + 1L), drop = FALSE]] <- a[e[i, 1L:(length(subjcov.names) + 1L), drop = FALSE]] + e[i, "Value"]
-      #cat(a[e[i, 1L:(length(subjcov.names) + 1L), drop = FALSE]], e[i, 1L:(length(subjcov.names) + 1L), drop = FALSE], "\n")
+    for(i in seq_len(nrow(e))){
+      a[e[i, seq_len(length(subjcov.names) + 1L), drop = FALSE]] <- a[e[i, seq_len(length(subjcov.names) + 1L), drop = FALSE]] + e[i, "Value"]
+      #cat(a[e[i, seq_len(length(subjcov.names) + 1L), drop = FALSE]], e[i, seq_len(length(subjcov.names) + 1L), drop = FALSE], "\n")
     }
     
     ## array into lambda/worth matrix
@@ -277,7 +277,7 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
     ## in case of objcovs the rows are collapsed according to obj covs
     if(!is.null(objcovs)){
       # collapse rownames of estmat
-      u        <- 1L:length(objects)
+      u        <- seq_along(objects)
       names(u) <- as.numeric(factor(apply(estmat, 1L, paste, collapse = "")))
       nam      <- aggregate(objects, list(u[names(u)]), paste)$x
       
@@ -286,7 +286,7 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
       leg         <- aggregate(rownames(estmat), o, paste, simplify = FALSE)
       ngr         <- ncol(leg) - length(used.objcovs) + 1L
       
-      ##namleg <- paste("objgr", 1L:ngr, sep = "")
+      ##namleg <- paste("objgr", seq_len(ngr), sep = "")
       namleg <- "objects in groups"
       names(leg)[(length(used.objcovs) + 1L):ncol(leg)] <- namleg  # probably not neccessary (is only of length 1)
       estmat <- unique(estmat)
@@ -311,13 +311,13 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
       "lambda" = { class(estmat)   <- c("wmat", class(estmat))  ; return(estmat)   },
       "worth"  = { class(worthmat) <- c("wmat", class(worthmat)); return(worthmat) },
       #"est"   = return(lambda.mat),
-      stop("     outmat must be either 'worth' or 'lambda'\n")
+      stop("     outmat must be either \"worth\" or \"lambda\"\n")
     )
 
     ### switch(outmat,
     ###    "lambda" = return(estmat),
     ###    "worth" = return(worthmat),
-    ###    stop("     outmat must be either 'worth' or 'lambda'\n")
+    ###    stop("     outmat must be either \"worth\" or \"lambda\"\n")
     ### )
   
   ## end pattdesignmodel
@@ -336,14 +336,14 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
       tpoints <- 1
       nobj    <- obj$envList$nobj
       npar    <- (nobj - 1L) * ncovpar
-      lambda  <- obj$coefficients[1L:npar]
+      lambda  <- obj$coefficients[seq_len(npar)]
       lmat    <- matrix(lambda, nrow = nobj - 1L)
       lmat    <- rbind(lmat, rep(0, ncol(lmat)))
     } else {                                             # time model
       tpoints <- envList$tpoints
       nobj    <- (envList$nitems - 1L)
       npar    <- nobj * ncovpar * tpoints
-      lambda  <- obj$coefficients[1L:npar]
+      lambda  <- obj$coefficients[seq_len(npar)]
       lmat    <- matrix(lambda, nrow = nobj)
       lmat    <- rbind(lmat, rep(0, ncol(lmat)))
       lmat    <- matrix(lmat, ncol = tpoints)
@@ -379,31 +379,31 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
     est         <- matrix(group.est, nrow = nobj / tpoints)
     
     ## worth matrix
-    for(i in 1L:ncol(est)){
+    for(i in seq_len(ncol(est))){
       # worth parameters
 
       worth            <- rep(0, nobj / tpoints)
       coeff            <- est[, i]
       worthdenominator <- 0
-      for(j in 1L:(nobj / tpoints)){
+      for(j in seq_len(nobj / tpoints)){
         worthdenominator <- worthdenominator + exp(mltp * coeff[j])
       }
-      for(j in 1L:(nobj / tpoints)){
+      for(j in seq_len(nobj / tpoints)){
         worth[j] <- exp(mltp * coeff[j]) / worthdenominator
       }
       worthmatrix <- cbind(worthmatrix, worth)
     }
     
     if(is.null(obj.names)){
-       obj.names <- obj$envList$obj.names[1L:(nobj / tpoints)] # default: only names for first time point are used
+       obj.names <- obj$envList$obj.names[seq_len(nobj / tpoints)] # default: only names for first time point are used
     } else {
-       obj.names <- obj.names[1L:(nobj / tpoints)]
+       obj.names <- obj.names[seq_len(nobj / tpoints)]
     }
     
     ## label worth matrix
     if(Tmod){
       if(gr.labels[1L] == "") Tlabel <- "T" else Tlabel <- ":T"
-      worth.names <- paste(rep(gr.labels, rep(tpoints, length(gr.labels))), paste(Tlabel, 1L:tpoints, sep = ""), sep = "")
+      worth.names <- paste(rep(gr.labels, rep(tpoints, length(gr.labels))), paste(Tlabel, seq_len(tpoints), sep = ""), sep = "")
       colnames(worthmatrix) <- worth.names
       rownames(worthmatrix) <- obj.names
     } else {
@@ -421,7 +421,7 @@ patt.worth <- function(fitobj, obj.names = NULL, outmat = "worth"){
       "lambda" = { class(est)         <- c("wmat", class(est))        ; return(est)        },
       "worth"  = { class(worthmatrix) <- c("wmat", class(worthmatrix)); return(worthmatrix)},
       #"est"   = return(lambda.mat),
-      stop("     outmat must be either 'worth' or 'lambda'\n")
+      stop("     outmat must be either \"worth\" or \"lambda\"\n")
     )
 
   } # end output from patt*fit

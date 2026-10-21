@@ -3,7 +3,7 @@ groupscontrib <- function(obj, lambda, X, nobj, ENV){
   
   # set up design matrix by expanding basic matrix X with covariates
   if(!is.null(names(obj$cov)))       # only in case of covariates
-    X <- do.call("cbind", lapply(1:length(obj$cov), function(i) X * obj$cov[i])) # design matrix for covariates
+    X <- do.call("cbind", lapply(seq_along(obj$cov), function(i) X * obj$cov[i])) # design matrix for covariates
   
   
   
@@ -24,13 +24,13 @@ groupscontrib <- function(obj, lambda, X, nobj, ENV){
     p.patt  <- patt / sumpatt
     ####
     # get likelihood contribution for single cov group
-    ll.bl <- lapply(obj[1L:(length(obj) - 1L)], blcontrib, p.patt)   # last element of obj is covariate structure
+    ll.bl <- lapply(obj[seq_len(length(obj) - 1L)], blcontrib, p.patt)   # last element of obj is covariate structure
 
   } else {    # for testing ignorable missing
   
     ## first complete cases
     NIcovs <- c(1, 0)
-    XM     <- do.call("cbind", lapply(1:2, function(i) X * NIcovs[i])) # design matrix for ign missings
+    XM     <- do.call("cbind", lapply(seq_len(2L), function(i) X * NIcovs[i])) # design matrix for ign missings
 
     # add undecided if undec = TRUE
     if(ENV$undec) XM <- cbind(XM, ENV$U)
@@ -46,7 +46,7 @@ groupscontrib <- function(obj, lambda, X, nobj, ENV){
 
     ## now incompletes
     NIcovs <- c(1, 1)
-    XM     <- do.call("cbind", lapply(1:2, function(i) X * NIcovs[i])) # design matrix for ign missings
+    XM     <- do.call("cbind", lapply(seq_len(2L), function(i) X * NIcovs[i])) # design matrix for ign missings
 
     # add undecided if undec = TRUE
     if(ENV$undec) XM <- cbind(XM, ENV$U)
@@ -58,7 +58,7 @@ groupscontrib <- function(obj, lambda, X, nobj, ENV){
     sumpatt <- sum(patt)
     p.patt  <- patt / sumpatt
 
-    ll.mbl <- lapply(obj[2L:(length(obj) - 1L)], blcontrib, p.patt)   # last element of obj is covariate structure
+    ll.mbl <- lapply(obj[seq.int(2L, length(obj) - 1L)], blcontrib, p.patt)   # last element of obj is covariate structure
     ll.bl  <- c(ll.bl, ll.mbl)
   }
   ll.bl

@@ -9,7 +9,7 @@ gfac2 <- function(covlevels){
   
   # generate covariates
   cov <- NULL
-  for(j in 1:ncov){
+  for(j in seq_len(ncov)){
     scov <- gl(covlevels[j], levmult[j], totlev * nrows)
     cov  <- cbind(cov, scov)
   }

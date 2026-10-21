@@ -13,15 +13,15 @@ genintdesign <- function(pattern, sinclair = TRUE){
   row     <- 1
   
   if(sinclair){                 # (12), (13), (23), (14), (24), ...
-    for(j in 2L:nobj) {
-      for(i in 1L:(j - 1L)){
+    for(j in seq.int(2L, nobj)) {
+      for(i in seq_len(j - 1L)){
         compvec[row, 1L] <- i
         compvec[row, 2L] <- j
         row <- row + 1
       }
     }
   } else {                        # (12), (13), (14), ..., (23), (24), ...
-    for(i in 1L:(nobj - 1L)) {
+    for(i in seq_len(nobj - 1L)) {
       for(j in (i + 1L):nobj){
         compvec[row, 1L] <- i
         compvec[row, 2L] <- j
@@ -34,27 +34,27 @@ genintdesign <- function(pattern, sinclair = TRUE){
   vec2 <- NULL
   vec3 <- NULL
   desc.names <- NULL
-  for(i in 1L:(ncomp - 1L)){
+  for(i in seq_len(ncomp - 1L)){
     for(j in (i + 1L):ncomp){
-      if(compvec[i, 1] == compvec[j, 1]){
+      if(compvec[i, 1L] == compvec[j, 1L]){
         vec1 <- c(vec1, i)
         vec2 <- c(vec2, j)
         vec3 <- c(vec3, +1)  # sign + because common object preferred in both comps
         desc.names <- c(desc.names, paste("I", compvec[i, 1L], ".", compvec[i, 2L], compvec[j, 2L], sep = "", collapse = ""))
       }
-      if(compvec[i, 2] == compvec[j, 2]){
+      if(compvec[i, 2L] == compvec[j, 2L]){
         vec1 <- c(vec1, i)
         vec2 <- c(vec2, j)
         vec3 <- c(vec3, +1)  # sign + because common object not preferred in both comps
         desc.names <- c(desc.names, paste("I", compvec[i, 2L], ".", compvec[i, 1L], compvec[j, 1L], sep = "", collapse = ""))
       }
-      if(compvec[i, 1] == compvec[j, 2]){
+      if(compvec[i, 1L] == compvec[j, 2L]){
         vec1 <- c(vec1, i)
         vec2 <- c(vec2, j)
         vec3 <- c(vec3, -1)  # sign - because common object preferred/not preferred
         desc.names <- c(desc.names, paste("I", compvec[i, 1L], ".", compvec[i, 2L], compvec[j, 1L], sep = "", collapse = ""))
       }
-      if(compvec[i, 2] == compvec[j, 1]){
+      if(compvec[i, 2L] == compvec[j, 1L]){
         vec1 <- c(vec1, i)
         vec2 <- c(vec2, j)
         vec3 <- c(vec3, -1)  # sign - because common object preferred/not preferred
@@ -74,7 +74,7 @@ genintdesign <- function(pattern, sinclair = TRUE){
   # print(pattern)
 
   designmatrix <- NULL
-  for(i in 1:nintpars){
+  for(i in seq_len(nintpars)){
     work         <- pattern[, multvec[i, 1L]] * pattern[, multvec[i, 2L]] * vec3[i]
     designmatrix <- cbind(designmatrix, work)
   }

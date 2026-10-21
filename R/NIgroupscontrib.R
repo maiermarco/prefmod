@@ -3,7 +3,7 @@ NIgroupscontrib <- function(obj, lambda, X, nobj, ENV){
   
   # set up design matrix by expanding basic matrix X with covariates
   if(!is.null(names(obj$cov)))       # only in case of covariates
-    X <- do.call("cbind", lapply(1L:length(obj$cov), function(i){ X * obj$cov[i] })) # design matrix for covariates
+    X <- do.call("cbind", lapply(seq_along(obj$cov), function(i){ X * obj$cov[i] })) # design matrix for covariates
   
   
   # MCAR
@@ -22,14 +22,14 @@ NIgroupscontrib <- function(obj, lambda, X, nobj, ENV){
     ###
     
     # get likelihood contribution for single cov group
-    ll.bl <- lapply(obj[1L:(length(obj) - 1L)], blcontrib, p.patt)   # last element of obj is covariate structure
+    ll.bl <- lapply(obj[seq_len(length(obj) - 1L)], blcontrib, p.patt)   # last element of obj is covariate structure
   
   ## MNAR
   } else if(ENV$NItest){   # for testing ignorable missing
     
     ## first complete cases
     NIcovs <- c(1, 0)
-    XM     <- do.call("cbind", lapply(1L:2L, function(i){ X * NIcovs[i] })) # design matrix for ign missings
+    XM     <- do.call("cbind", lapply(seq_len(2L), function(i){ X * NIcovs[i] })) # design matrix for ign missings
     
     # add undecided if undec = TRUE
     if(ENV$undec) XM <- cbind(XM, ENV$U)
@@ -45,7 +45,7 @@ NIgroupscontrib <- function(obj, lambda, X, nobj, ENV){
 
     ## now incompletes
     NIcovs <- c(1, 1)
-    XM     <- do.call("cbind", lapply(1L:2L, function(i){ X * NIcovs[i] })) # design matrix for ign missings
+    XM     <- do.call("cbind", lapply(seq_len(2L), function(i){ X * NIcovs[i] })) # design matrix for ign missings
     
     # add undecided if undec = TRUE
     if(ENV$undec) XM <- cbind(XM, ENV$U)
@@ -57,12 +57,12 @@ NIgroupscontrib <- function(obj, lambda, X, nobj, ENV){
     sumpatt <- sum(patt)
     p.patt  <- patt / sumpatt
     
-    ll.mbl <- lapply(obj[2L:(length(obj) - 1L)], blcontrib, p.patt)   # last element of obj is covariate structure
+    ll.mbl <- lapply(obj[seq.int(2L, length(obj) - 1L)], blcontrib, p.patt)   # last element of obj is covariate structure
     ll.bl  <- c(ll.bl, ll.mbl)
   
   } else { # nonresponse models
     
-    likparts <- lapply(obj[1L:(length(obj) - 1L)], NIblcontrib, lambda, X, nobj, ENV)
+    likparts <- lapply(obj[seq_len(length(obj) - 1L)], NIblcontrib, lambda, X, nobj, ENV)
     ll       <- sum(unlist(lapply(likparts, function(x){ x$ll })))   # now normalised part
     fl       <- sum(unlist(lapply(likparts, function(x){ x$fl })))   # loglik for saturated model
 
@@ -71,62 +71,62 @@ NIgroupscontrib <- function(obj, lambda, X, nobj, ENV){
     # nur mehr zwei elemente in liste
     ll.bl
 
-    #######################################################################################################
-    # this part is now in NIblcontrib                                                                     #
-    # ll.bl         <- list()      # some initialisation                                                  #
-    # ncomp         <- ENV$ncomp                                                                          #
-    # patt.all      <- list()                                                                             #
-    # summ.patt.all <- 0                                                                                  #
-    # summ.cnts     <- 0                                                                                  #
-    # ll1           <- 0                                                                                  #
-    # fl            <- 0                                                                                  #
-    #                                                                                                     #
-    # for(block in 1L:(length(obj) - 1L)){                                                                #
-    #                                                                                                     #
-    #     naidx <- 1 - as.numeric(obj[[block]]$notnaidx)   # R = 1 missing, R = 0 observed                #
-    #                                                                                                     #
-    #     R      <- matrix(rep(naidx, 2^ncomp), nrow = 2^ncomp, byrow = TRUE)                             #
-    #     RBstar <- R %*% abs(pcdesign(nobj))   # alpha_i + alpha_j                                       #
-    #     #RBstar <- R %*% (pcdesign(4))        # alpha_i - alpha_j                                       #
-    #                                                                                                     #
-    #     YRBstar <- do.call(cbind, lapply(1L:nobj, function(i){ RBstar[, i] * ENV$Y[, i] }))   # betas   #
-    #                                                                                                     #
-    #     ###################################################################                             #
-    #     ##### nonresponse model alpha_i+alpha_j/alpha_i-alpha_j ###########                             #
-    #     XX <- X                                                      # only lambdas                     #
-    #     if(ENV$MISalpha) XX <- cbind(X, RBstar[, 1L:nobj])           # lambdas, alpha_i                 #
-    #     if(ENV$MISbeta)  XX <- cbind(X, RBstar[, 1L:nobj], YRBstar)  # lambdas, alpha_i. beta_i         #
-    #     ###################################################################                             #
-    #                                                                                                     #
-    #                                                                                                     #
-    #     ####################################################################                            #
-    #     ###### nonresponse model alpha_ij ???? #############################                            #
-    #     #XX <- cbind(X, R)                                                                              #
-    #     #XX <- cbind(X, R[, 1:4], RX[, 1:2])                                                            #
-    #     #XX <- cbind(X, RX[, 1:6])                                                                      #
-    #     ####################################################################                            #
-    #                                                                                                     #
-    #     # add dependencies if ia = TRUE                                                                 #
-    #     if(ENV$ia) XX <- cbind(XX, ENV$XI)                                                              #
-    #                                                                                                     #
-    #     patt.all[[block]] <- exp(XX %*% lambda)                                                         #
-    #     patt <- tapply(patt.all[[block]], obj[[block]]$s, sum)                                          #
-    #     ll1  <- ll1 + sum(obj[[block]]$counts * log(patt))                                              #
-    #                                                                                                     #
-    #     summ.patt.all <- summ.patt.all + sum(patt.all[[block]])                                         #
-    #     summ.cnts     <- summ.cnts + sum(obj[[block]]$counts)                                           #
-    #                                                                                                     #
-    #     p.cnts <- obj[[block]]$counts / sum(obj[[block]]$counts)                                        #
-    #     fl     <- fl + sum(log(p.cnts[p.cnts > 0]) * obj[[block]]$counts[obj[[block]]$counts > 0])      #
-    #                                                                                                     #
-    # }                                                                                                   #
-    #                                                                                                     #
-    # ll          <- ll1 - summ.cnts * log(summ.patt.all)                                                 #
-    # ll.bl[[1L]] <- list(ll = ll, fl = fl)                                                               #
-    #                                                                                                     #
-    # # nur mehr zwei elemente in liste: ll und fl mit 1 ebene dazwischen (das waeren Covs)               #
-    # ll.bl                                                                                               #
-    #######################################################################################################
+    #############################################################################################################
+    # this part is now in NIblcontrib                                                                           #
+    # ll.bl         <- list()      # some initialisation                                                        #
+    # ncomp         <- ENV$ncomp                                                                                #
+    # patt.all      <- list()                                                                                   #
+    # summ.patt.all <- 0                                                                                        #
+    # summ.cnts     <- 0                                                                                        #
+    # ll1           <- 0                                                                                        #
+    # fl            <- 0                                                                                        #
+    #                                                                                                           #
+    # for(block in seq_len(length(obj) - 1L)){                                                                  #
+    #                                                                                                           #
+    #     naidx <- 1 - as.numeric(obj[[block]]$notnaidx)   # R = 1 missing, R = 0 observed                      #
+    #                                                                                                           #
+    #     R      <- matrix(rep(naidx, 2^ncomp), nrow = 2^ncomp, byrow = TRUE)                                   #
+    #     RBstar <- R %*% abs(pcdesign(nobj))   # alpha_i + alpha_j                                             #
+    #     #RBstar <- R %*% (pcdesign(4))        # alpha_i - alpha_j                                             #
+    #                                                                                                           #
+    #     YRBstar <- do.call(cbind, lapply(seq_len(nobj), function(i){ RBstar[, i] * ENV$Y[, i] }))   # betas   #
+    #                                                                                                           #
+    #     ###################################################################                                   #
+    #     ##### nonresponse model alpha_i+alpha_j/alpha_i-alpha_j ###########                                   #
+    #     XX <- X                                                      # only lambdas                           #
+    #     if(ENV$MISalpha) XX <- cbind(X, RBstar[, seq_len(nobj)])           # lambdas, alpha_i                 #
+    #     if(ENV$MISbeta)  XX <- cbind(X, RBstar[, seq_len(nobj)], YRBstar)  # lambdas, alpha_i. beta_i         #
+    #     ###################################################################                                   #
+    #                                                                                                           #
+    #                                                                                                           #
+    #     ####################################################################                                  #
+    #     ###### nonresponse model alpha_ij ???? #############################                                  #
+    #     #XX <- cbind(X, R)                                                                                    #
+    #     #XX <- cbind(X, R[, seq_len(4L)], RX[, seq_len(2L)])                                                  #
+    #     #XX <- cbind(X, RX[, seq_len(6L)])                                                                    #
+    #     ####################################################################                                  #
+    #                                                                                                           #
+    #     # add dependencies if ia = TRUE                                                                       #
+    #     if(ENV$ia) XX <- cbind(XX, ENV$XI)                                                                    #
+    #                                                                                                           #
+    #     patt.all[[block]] <- exp(XX %*% lambda)                                                               #
+    #     patt <- tapply(patt.all[[block]], obj[[block]]$s, sum)                                                #
+    #     ll1  <- ll1 + sum(obj[[block]]$counts * log(patt))                                                    #
+    #                                                                                                           #
+    #     summ.patt.all <- summ.patt.all + sum(patt.all[[block]])                                               #
+    #     summ.cnts     <- summ.cnts + sum(obj[[block]]$counts)                                                 #
+    #                                                                                                           #
+    #     p.cnts <- obj[[block]]$counts / sum(obj[[block]]$counts)                                              #
+    #     fl     <- fl + sum(log(p.cnts[p.cnts > 0]) * obj[[block]]$counts[obj[[block]]$counts > 0])            #
+    #                                                                                                           #
+    # }                                                                                                         #
+    #                                                                                                           #
+    # ll          <- ll1 - summ.cnts * log(summ.patt.all)                                                       #
+    # ll.bl[[1L]] <- list(ll = ll, fl = fl)                                                                     #
+    #                                                                                                           #
+    # # nur mehr zwei elemente in liste: ll und fl mit 1 ebene dazwischen (das waeren Covs)                     #
+    # ll.bl                                                                                                     #
+    #############################################################################################################
   
   }
 }

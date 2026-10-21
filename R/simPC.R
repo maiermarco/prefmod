@@ -12,17 +12,17 @@ simPC <- function(nobj, nobs, worth = NULL, seed = NULL, pr = FALSE){
   if(pr) cat("used worth parameters are: ", worth, "\n")
   
   probs <- NULL
-  for(j in 2L:(nobj)){
-    for(i in 1L:(j - 1L)){
+  for(j in seq.int(2L, nobj)){
+    for(i in seq_len(j - 1L)){
       probs <- c(probs, worth[i] / (worth[i] + worth[j]))
     }
   }
   
-  ncomp <- choose(nobj, 2)
+  ncomp <- choose(nobj, 2L)
   if(!is.null(seed)) set.seed(seed)
   
   data <- NULL
-  for(i in 1:ncomp) data <- cbind(data, sample(c(1, -1), nobs, replace = TRUE, prob = c(probs[i], 1 - probs[i])))
+  for(i in seq_len(ncomp)) data <- cbind(data, sample(c(1, -1), nobs, replace = TRUE, prob = c(probs[i], 1.0 - probs[i])))
   
   data.frame(data)
 

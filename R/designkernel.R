@@ -24,7 +24,7 @@ designkernel <- function(diffs, blnUndec, blnIntcovs, env2){
   ## not implemented:
   ## design for categories (e.g. for ordinal paired comparisons)
   ## catdesign <- ones.totlev %x% categories
-  ## catnames <- paste("G", 0:(ncatPC - 1), sep = "")
+  ## catnames <- paste("G", seq.int(0L, ncatPC - 1L), sep = "")
 
   ## design for interactions between objects
   if(blnIntcovs){

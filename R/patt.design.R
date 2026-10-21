@@ -28,7 +28,7 @@
     ### 2011-03-25 deprecated options, for backwards compatibility
     dots <- as.list(substitute(list(...)))[-1L]
     nn   <- names(dots)
-    for(i in seq(along = dots)) assign(nn[i], dots[[i]])
+    for(i in seq_along(dots)) assign(nn[i], dots[[i]])
     
     if(!exists("blnIntcovs")) blnIntcovs <- ia
     if(!exists("blnRevert"))  blnRevert  <- reverse
@@ -50,19 +50,19 @@
     # for backwards compatibility:
     if(!is.null(cat.scovs)) cov.sel <- cat.scovs
     
-    #' datafile     = "",       # dataframe used
-    #' nitems       = 4,
-    #' blnRevert    = FALSE,
-    #' blnReducecat = TRUE,
-    #' blnIntcovs   = TRUE,
-    #' resptype     = "ranking",
-    #'
-    #' cov.sel      = "",
-    #'
-    #' blnGLIMcmds  = FALSE,    # no GLIM output
-    #' glimCmdFile  = "",
-    #' outFile      = "",
-    #' intFile      = ""
+    # datafile     = "",       # dataframe used
+    # nitems       = 4,
+    # blnRevert    = FALSE,
+    # blnReducecat = TRUE,
+    # blnIntcovs   = TRUE,
+    # resptype     = "ranking",
+    #
+    # cov.sel      = "",
+    #
+    # blnGLIMcmds  = FALSE,    # no GLIM output
+    # glimCmdFile  = "",
+    # outFile      = "",
+    # intFile      = ""
     
     # default ctrl object
     ctrl <- list(datafile = "", nitems = NULL, objnames = "", resptype = "paircomp",
@@ -107,14 +107,14 @@
     
     ### ## from pcpatt0 - obsolete
     ### if(!is.list(ctrl))
-    ###   stop(paste(deparse(substitute(ctrl)), "is not a list object - see help for pcpatt0"))
+    ###   stop(deparse(substitute(ctrl)), "is not a list object - see help for pcpatt0")
     
     ## initialising
     ##
     # removed 2011-01-20 cat("initialising...\n")
     flush.console()
     
-    for(i in 1L:length(ctrl))
+    for(i in seq_along(ctrl))
       do.call("assign", list(names(ctrl)[i], ctrl[[i]], ENV))
     
     init(dfr)    # initialisation function
@@ -178,7 +178,7 @@
         if(ncov == 1L){                          # only 1 covariate
           baslev <- npatt
         } else {                                  # >1 covariates
-          baslev <- c(covlevels[2L:ncov], npatt)
+          baslev <- c(covlevels[seq.int(2L, ncov)], npatt)
         }
         levmult <- rev(cumprod(baslev[indx]))
       } else {
@@ -191,9 +191,9 @@
       scov           <- data.frame(scov)
       
       if(!casewise){
-        for(j in 1L:ncov) scov[, j] <- gl(covlevels[j], levmult[j], totlev * npatt)
+        for(j in seq_len(ncov)) scov[, j] <- gl(covlevels[j], levmult[j], totlev * npatt)
       } else {
-        for(j in 1L:ncov) scov[, j] <- factor(rep(cov.case[, j], each = npatt))
+        for(j in seq_len(ncov)) scov[, j] <- factor(rep(cov.case[, j], each = npatt))
       }
     }
     
@@ -221,7 +221,7 @@
     idx <- match(datStr, dpattStr)
     
     if(casewise){
-      idx <- idx + (0:(length(datStr) - 1) * length(dpattStr))
+      idx <- idx + (seq.int(0L, length(datStr) - 1L) * length(dpattStr))
     } else {
     if (blnSubjcov)
       #idx <- idx + t(colSums(apply(as.matrix(cov.case) - 1, 1L, "*", levmult)))
@@ -232,7 +232,7 @@
     # # old versions count response patterns
     # y <- rep(0, totlev * npatt)
     # cov.addr <- 0       # for case blnSubjcov == FALSE
-    # for(i in 1L:nsubj) {
+    # for(i in seq_len(nsubj)) {
     #   if(blnSubjcov) cov.addr <- sum((cov.case[i, ] - 1) * levmult)
     #   j <- match(datStr[i], dpattStr)
     #   y[j + cov.addr] <- y[j + cov.addr] + 1
@@ -272,7 +272,7 @@
       num.scovs <- unique(num.scovs) # in case somebody uses same variable twice
       ncov.case <- as.matrix(dat[, c(num.scovs)], drop = FALSE)
       ncov      <- matrix(, nrow = nsubj * npatt, ncol = length(num.scovs))
-      for(j in seq(along = num.scovs)) ncov[, j] <- rep(ncov.case[, j], each = npatt)
+      for(j in seq_along(num.scovs)) ncov[, j] <- rep(ncov.case[, j], each = npatt)
       colnames(ncov) <- num.scovs
       CASE           <- gl(nsubj, npatt)
       dm             <- data.frame(cbind(dm, ncov, CASE = CASE))
@@ -280,13 +280,13 @@
     }
     
     
-    objnames <- colnames(design[, 1L:nitems])
+    objnames <- colnames(design[, seq_len(nitems)])
     
     ### new: object specific covariates
     if(!is.null(objcovs)){
       if(!is.data.frame(objcovs)) stop("object specific covariates must be specified as a data frame")
       if(any(sapply(objcovs, is.factor))) stop("object specific covariates must not be factors (use model.matrix first)")
-      dm          <- data.frame(dm, design[, 1L:nitems] %*% as.matrix(objcovs)) # add obj covs to design data frame
+      dm          <- data.frame(dm, design[, seq_len(nitems)] %*% as.matrix(objcovs)) # add obj covs to design data frame
       objcovnames <- colnames(objcovs)
       
       #varnames <- c(varnames, objcovnames)

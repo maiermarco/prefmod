@@ -10,11 +10,11 @@ print.pattMod <- function(x, ...){                     #cmat, nobj, elim, ilabel
   #lf <- sum(log(p.cnts[p.cnts > 0]) * cnts[cnts > 0])
   #deviance <- -2 * (lm - lf)
   
-  switch(envList$resptype,
-    "paircomp" = { type <- "paired comparison" },
-    "rating"   = { type <- "ratings" },
-    "ratingT"  = { type <- "repeated ratings" },
-    "ranking"  = { type <- "rankings" }
+  type <- switch(envList$resptype,
+    "paircomp" = "paired comparison",
+    "rating"   = "ratings",
+    "ratingT"  = "repeated ratings",
+    "ranking"  = "rankings"
   )
   
   cat("\nResults of pattern model for", type, "\n")
@@ -30,14 +30,14 @@ print.pattMod <- function(x, ...){                     #cmat, nobj, elim, ilabel
 
   cov.names <- c("", colnames(envList$covdesmat)[-1L])
   if(regexpr("T", envList$resptype) > 0){                # for time models
-    idxvec <- -envList$nitems * (1L:envList$tpoints)     # we need a different definition of nobj
+    idxvec <- -envList$nitems * seq_len(envList$tpoints)     # we need a different definition of nobj
   } else {
-    idxvec <- 1L:(envList$nobj - 1L)
+    idxvec <- seq_len(envList$nobj - 1L)
   }
   obj.names <- envList$obj.names[idxvec]
   
   all.obj.names <- rep(obj.names, length(cov.names))
-  #obj.names <- rep(LETTERS[1L:(envList$nobj - 1L)], length(cov.names))
+  #obj.names <- rep(LETTERS[seq_len(envList$nobj - 1L)], length(cov.names))
   
   #cov.names <- rep(cov.names, rep(envList$nobj - 1L, length(cov.names)))
   cov.names <- rep(cov.names, rep(length(obj.names), length(cov.names))) # covnames repeated for group of all lambdas
@@ -60,8 +60,8 @@ print.pattMod <- function(x, ...){                     #cmat, nobj, elim, ilabel
     if(envList$MISalpha || envList$MISbeta){
       lenallest  <- length(obj$estimate)
       lenmisspar <- lenallest - envList$nobj - length(envList$ilabels) + 1L
-      if(envList$MISalpha) par.names <- c(par.names, paste("mis.alpha", (1L:envList$nobj)[envList$Malph], sep = ""))
-      if(envList$MISbeta)  par.names <- c(par.names, paste("mis.beta",  (1L:envList$nobj)[envList$Mbeta], sep = ""))
+      if(envList$MISalpha) par.names <- c(par.names, paste("mis.alpha", seq_len(envList$nobj)[envList$Malph], sep = ""))
+      if(envList$MISbeta)  par.names <- c(par.names, paste("mis.beta",  seq_len(envList$nobj)[envList$Mbeta], sep = ""))
     }
 
     if(envList$MIScommon) par.names <- c(par.names, "mis.alpha.common")
@@ -70,7 +70,7 @@ print.pattMod <- function(x, ...){                     #cmat, nobj, elim, ilabel
   
   if(!is.null(envList$tpoints)){       # rep measurements
     if(envList$undec) {
-      U.names   <- paste("UT", 1L:envList$tpoints, sep = "")
+      U.names   <- paste("UT", seq_len(envList$tpoints), sep = "")
       par.names <- c(par.names, U.names)
     }
   } else {                              # only one time point
@@ -85,5 +85,7 @@ print.pattMod <- function(x, ...){                     #cmat, nobj, elim, ilabel
   colnames(coef.table) <- c("estimate", "se", "z", "p-value")
   cat("\n")
   print(coef.table)
+
+  invisible(x)
 
 }

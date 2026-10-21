@@ -2,7 +2,7 @@ splitData2 <- function(dat, nobj, ENV){
   
   dat <- as.matrix(dat[[1L]])
   # calculates NAgroup membership
-  if(any(is.na(dat))){
+  if(anyNA(dat)){
     dichX   <- ifelse(is.na(dat), 1, 0)
     strdata <- apply(dichX, 1L, function(x){ paste(x, collapse = "") })
     gmemb   <- as.vector(data.matrix(data.frame(strdata)))

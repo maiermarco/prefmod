@@ -1,8 +1,8 @@
 # aus gtools
-perm <- function(n, r, v = 1:n) {
-  if(r == 1) matrix(v, n, 1) else if (n == 1) matrix(v, 1, r) else {
+perm <- function(n, r, v = seq_len(n)) {
+  if(r == 1L) matrix(v, n, 1L) else if(n == 1L) matrix(v, 1L, r) else {
     X <- NULL
-    for(i in 1:n) X <- rbind(X, cbind(v[i], Recall(n - 1, r - 1, v[-i])))
+    for(i in seq_len(n)) X <- rbind(X, cbind(v[i], Recall(n - 1L, r - 1L, v[-i])))
     X
   }
 }

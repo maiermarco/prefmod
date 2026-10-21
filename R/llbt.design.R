@@ -36,7 +36,7 @@ llbt.design <- function(
   ### 2010-12-28 deprecated options, for backwards compatibility
   dots <- as.list(substitute(list(...)))[-1L]
   nn   <- names(dots)
-  for(i in seq(along = dots)) assign(nn[i], dots[[i]])
+  for(i in seq_along(dots)) assign(nn[i], dots[[i]])
   
   if(!exists("blnGLIMcmds")) blnGLIMcmds <- FALSE
   if(!exists("blnCasewise")) blnCasewise <- casewise
@@ -46,7 +46,7 @@ llbt.design <- function(
   
   cov.sel     <- eval(cov.sel)
   blnGLIMcmds <- ifelse(blnGLIMcmds == "T", TRUE, FALSE)
-  blnCasewise <- ifelse((blnCasewise == TRUE) || (blnCasewise == "T"), TRUE, FALSE)
+  blnCasewise <- ifelse(isTRUE(blnCasewise) || (blnCasewise == "T"), TRUE, FALSE)
   
   if(blnGLIMcmds) stop("\nGLIMcmds deprecated. Please use preftest < 0.8-24!\n\n", call. = FALSE)
   
@@ -92,7 +92,7 @@ llbt.design <- function(
   
   reduce.cat <- TRUE # always TRUE until clarification
 
-  if(length(objnames) != nitems) objnames <- paste("o", 1L:nobj, sep = "")
+  if(length(objnames) != nitems) objnames <- paste("o", seq_len(nobj), sep = "")
   ncomp <- nobj * (nobj - 1L) / 2
   
   
@@ -119,8 +119,8 @@ llbt.design <- function(
   # which variables are factors 2010-12-28 --- obsolete for time being
   # facs <- sapply(dfr, is.factor)
   
-  nrespcat <- diff(range(dat[, 1L:ncomp], na.rm = TRUE))   # number of response categories categories
-  raw.data <- dat[, 1L:ncomp]
+  nrespcat <- diff(range(dat[, seq_len(ncomp)], na.rm = TRUE))   # number of response categories categories
+  raw.data <- dat[, seq_len(ncomp)]
   
   
   # reduce categories
@@ -167,10 +167,10 @@ llbt.design <- function(
     }
 
     if(toupper("all") %in% toupper(num.scovs))
-      stop("\n'all' is not allowed in num.scovs\n")
+      stop("\n\"all\" is not allowed in num.scovs\n")
     for(var in cov.sel){
       if(var %in% num.scovs) next
-      if((min(dat[, var]) != 1L) || (any(dat[, var] != as.integer(dat[, var])))) stop("\ncategorical covariate '", var, "' incorrectly specified (perhaps numeric?)\n")
+      if((min(dat[, var]) != 1L) || (any(dat[, var] != as.integer(dat[, var])))) stop("\ncategorical covariate \"", var, "\" incorrectly specified (perhaps numeric?)\n")
       if(max(dat[, var]) > 10) warning("\ncategorical covariate", var, "has > 10 categories (perhaps numeric?)\n")
     }
 
@@ -183,7 +183,7 @@ llbt.design <- function(
     
     
     cov.case <- as.matrix(dat[, c(cov.sel)])
-    # if(any(is.na(cov.case)))
+    # if(anyNA(cov.case))
     #   stop("subject covariates with NAs not allowed")
     
     NAs <- which(!complete.cases(cov.case))                  # check for NA
@@ -235,13 +235,13 @@ llbt.design <- function(
     if(ncov == 1L){
       baslev <- nrows
     } else {
-      baslev <- c(covlevels[2L:ncov], nrows)
+      baslev <- c(covlevels[seq.int(2L, ncov)], nrows)
     }
     levmult <- rev(cumprod(baslev[indx]))
     
     # generate subject covariates
     cov <- NULL
-    for(j in 1L:ncov){
+    for(j in seq_len(ncov)){
       scov <- gl(covlevels[j], levmult[j], totlev * nrows)
       cov  <- cbind(cov, scov)
     }
@@ -260,7 +260,7 @@ llbt.design <- function(
   #
   # mu - factor for comparisons
   #
-  mu <- rep.int(1L:ncomp, rep.int((nrespcat + 1L), ncomp))
+  mu <- rep.int(seq_len(ncomp), rep.int((nrespcat + 1L), ncomp))
   mu <- factor(rep(mu, totlev))           # stack mu totlev times
   
   
@@ -272,7 +272,7 @@ llbt.design <- function(
   g <- ones.totlev %x% g              # stack gammas totlev times
   #print(g)
   
-  gamnames <- paste("g", 0L:nrespcat, sep = "")
+  gamnames <- paste("g", seq.int(0L, nrespcat), sep = "")
   
   
   #
@@ -280,9 +280,9 @@ llbt.design <- function(
   #
   if(ncov == 0L && !casewise){
     y <- rep(0, nrows)
-    for(i in 1L:nsubj){
+    for(i in seq_len(nsubj)){
       k <- 1
-      for(j in 1L:ncomp){
+      for(j in seq_len(ncomp)){
         t <- rawdata[i, j]
         if(!is.na(t)){
           y[k + t] <- y[k + t] + 1
@@ -294,9 +294,9 @@ llbt.design <- function(
   # case: categorical subject covariates
   #
     y <- rep(0, totlev * nrows)
-    for(i in 1L:nsubj){
+    for(i in seq_len(nsubj)){
       y.address <- sum((cov.case[i, ] - 1) * levmult)
-      for(j in 1L:ncomp){
+      for(j in seq_len(ncomp)){
         t <- rawdata[i, j]
         if(!is.na(t)){
           y[y.address + t + 1L] <- y[y.address + t + 1L] + 1
@@ -314,7 +314,7 @@ llbt.design <- function(
       cov <- data.frame(cov)
     }
     
-    case      <- rep.int(1L:nsubj, rep.int(nrows, nsubj))
+    case      <- rep.int(seq_len(nsubj), rep.int(nrows, nsubj))
     case      <- factor(case)                            # factor for cases
     cov       <- cbind(cov, case)
     cov       <- data.frame(cov)
@@ -324,8 +324,8 @@ llbt.design <- function(
     k         <- 1
     y         <- rep(0, nrows * totlev)
 
-    for(i in 1L:nsubj){
-      for(j in 1L:ncomp){
+    for(i in seq_len(nsubj)){
+      for(j in seq_len(ncomp)){
         t <- rawdata[i, j]
         if(!is.na(t)){
           y[k + t] <- y[k + t] + 1
@@ -377,59 +377,6 @@ llbt.design <- function(
   
   class(dm) <- c("data.frame", "llbtdes")
   
-  return(dm)
-  
-  
-  ###############################################################################################
-  #                                                                                             #
-  # # GLIM commands output deprecated from 0.8-24 onwards                                       #
-  #                                                                                             #
-  #                                                                                             #
-  # if(glimoutput){                                                                             #
-  #                                                                                             #
-  #   names(dm[, 1L]) <- "!y"                                                                   #
-  #   write.table(dm, outFile, quote = FALSE, row.names = FALSE)                                #
-  #                                                                                             #
-  #   txt <- paste("$SL ", length(y), sep = "")                                                 #
-  #   write(txt, file = glimoutFile)                                                            #
-  #                                                                                             #
-  #   txt <- paste("$DATA y ", paste(varnames, collapse = " "), sep = "")                       #
-  #   write(txt, file = glimoutFile, append = T)                                                #
-  #                                                                                             #
-  #   txt <- paste("$DINP '", outFile, "' 132", sep = "")                                       #
-  #   write(txt, file = glimoutFile, append = TRUE)                                             #
-  #                                                                                             #
-  #   txt <- paste("$FAC mu ", ncomp, " ", sep = "")                                            #
-  #   if(ncov > 0L){                                                                            #
-  #     facs <- na.omit(data.frame(covnames, covlevels))                                        #
-  #     txt  <- paste(txt, paste(facs[, 1L], facs[, 2L], sep = " ", collapse = " "), sep = "")  #
-  #   }                                                                                         #
-  #   write(txt, file = glimoutFile, append = TRUE)                                             #
-  #                                                                                             #
-  #   if(ncov == 0L){                                                                           #
-  #     txt <- "$ELIM mu"                                                                       #
-  #   } else if(casewise){                                                                      #
-  #     txt <- "$ELIM mu*case"                                                                  #
-  #   } else {                                                                                  #
-  #     txt <- paste("$ELIM mu*", paste(covnames, collapse = "*"), sep = "")                    #
-  #   }                                                                                         #
-  #   write(txt, file = glimoutFile, append = TRUE)                                             #
-  #                                                                                             #
-  #   write("$ERR P $YV y", file = glimoutFile, append = TRUE)                                  #
-  #                                                                                             #
-  #   txt <- paste("$FIT", paste(objnames, collapse = "+"), sep = " ")                          #
-  #   write(txt, file = glimoutFile, append = TRUE)                                             #
-  #                                                                                             #
-  #   write("$DISP E", file = glimoutFile, append = TRUE)                                       #
-  #                                                                                             #
-  #   write("$RETURN", file = glimoutFile, append = TRUE)                                       #
-  # }                                                                                           #
-  #                                                                                             #
-  # # define factors according to input data frame 2010-12-28 obsolete for the time being       #
-  # facnam <- names(facs[facs])                                                                 #
-  #                                                                                             #
-  # if(glimoutput){ invisible(dm) } else { return(dm) }                                         #
-  #                                                                                             #
-  ###############################################################################################
+  dm
 
 }

@@ -8,8 +8,8 @@ Rpatternmat <- function(nobj){
   ncomp <- nobj * (nobj - 1L) / 2
   diffs <- matrix(, ncol = ncomp, nrow = nrow(Rpatt))
   c     <- 0
-  for(j in 2L:nobj){
-    for(i in 1L:(j - 1L)){
+  for(j in seq.int(2L, nobj)){
+    for(i in seq_len(j - 1L)){
       c <- c + 1
       diffs[, c] <- Rpatt[, i] - Rpatt[, j]
     }

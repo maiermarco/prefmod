@@ -8,7 +8,7 @@ red.cat.agg <- function(x, nrespcat){
 # i   <- red.cat(0:nrespcat, nrespcat)
 # x   <- matrix(x, ncol = nrespcat + 1L, byrow = TRUE)
 # out <- NULL
-# for(k in 1:dim(x)[1L])
+# for(k in seq_len(dim(x)[1L]))
 #   for(j in 0:max(i)){
 #     out <- c(out, sum(tm[k, ] * ifelse(i == j, 1, 0)))
 # }

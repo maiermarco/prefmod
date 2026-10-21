@@ -22,7 +22,7 @@ writeGLIMcmds <- function(
   flush.console()
   
   #env <- get("ENV", environment(patt.design))
-  #for(i in 1L:length(ls(env))) do.call("assign", list(ls(env)[i], get(ls(env)[i], env)))
+  #for(i in seq_along(ls(env))) do.call("assign", list(ls(env)[i], get(ls(env)[i], env)))
   
   ## design file
   

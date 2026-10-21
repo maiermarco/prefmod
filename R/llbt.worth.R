@@ -7,11 +7,11 @@ llbt.worth <- function(fitobj, outmat = "worth"){
   # check if either model results from gnm (using llbt.design) or from llbtPC.fit
 
   llbtdesignmodel <- FALSE
-  llbtPCfitmodel  <- ("llbtMod" %in% class(fitobj))
+  llbtPCfitmodel  <- inherits(fitobj, "llbtMod")
   
   if(!llbtPCfitmodel){
     design <- fitobj$data                        ## unten nocheinmal
-    if("llbtdes" %in% class(design)) llbtdesignmodel <- TRUE
+    if(inherits(design, "llbtdes")) llbtdesignmodel <- TRUE
   }
   
   if(llbtdesignmodel == llbtPCfitmodel) stop("Model result must be either from llbtPC.fit or having used llbt.design")
@@ -31,7 +31,7 @@ llbt.worth <- function(fitobj, outmat = "worth"){
     objcovs     <- attr(design, "objcovs")
     objnames    <- c(objnames, objcovnames)
 
-    if("gnm" %in% class(fitobj)){
+    if(inherits(fitobj, "gnm")){
       fterm <- as.character(attr(fitobj$terms, "predictor"))
     } else {
       fterm <- attr(fitobj$terms, "term.labels")
@@ -77,7 +77,7 @@ llbt.worth <- function(fitobj, outmat = "worth"){
       if(length(subjcov.names) > 0L){   # subject variable in design matrix and in model
         # set up subj cov design
         levlist <- lapply(fitobj$model[subjcov.names], levels)
-        maxlev  <- sapply(levlist, length)
+        maxlev  <- lengths(levlist)
       }
       if(!exists("maxlev")){                      #subject variables in design matrix but none in model
         maxlev         <- 1
@@ -90,14 +90,14 @@ llbt.worth <- function(fitobj, outmat = "worth"){
     
     # set up array
     array.dim       <- c(OBJ = length(objects), maxlev)
-    array.dimnames  <- lapply(array.dim, function(i){ 1L:i })
+    array.dimnames  <- lapply(array.dim, function(i){ seq_len(i) })
     a               <- array(0, dim = array.dim, dimnames = array.dimnames)
     dimnames(a)$OBJ <- objects
     
     
     ### extract relevant estimates
     est        <- coef(fitobj)
-    estnamlist <- lapply(names(est), strsplit, ":")
+    estnamlist <- lapply(names(est), strsplit, split = ":", fixed = TRUE)
     obj.in.est <- sapply(estnamlist, function(x){ any(objnames %in% unlist(x)) })
     est        <- est[obj.in.est]   # only model terms with obj
     estnamlist <- estnamlist[obj.in.est]
@@ -126,7 +126,7 @@ llbt.worth <- function(fitobj, outmat = "worth"){
       
       newest        <- NULL
       newestnamlist <- NULL
-      for(i in 1L:length(estnamlist.wosubj)){
+      for(i in seq_along(estnamlist.wosubj)){
         if(any(objcovnames %in% estnamlist.wosubj[[i]])){
           # new estnamlist elements
           newenlel      <- as.list(objects)
@@ -168,7 +168,7 @@ llbt.worth <- function(fitobj, outmat = "worth"){
     estmat[, 1L] <- objnum[which.obj.in.est]
     
     for(scovnam in subjcov.names){              # loop all subj covs
-      for(i in 1L:length(estnamlist)){          # loop all estimate terms
+      for(i in seq_along(estnamlist)){          # loop all estimate terms
         trms <- estnamlist[[i]][[1L]]           # extract single terms
         idx  <- grep(scovnam, trms)             # look which single term corresponds to current subj cov
         lev  <- 0
@@ -187,20 +187,20 @@ llbt.worth <- function(fitobj, outmat = "worth"){
       if(row[, scov] == 0){
         #row <- expand.dfr(row, maxlev[scov])
         row <- row[rep(seq_len(nrow(row)), maxlev[scov]), ]
-        row[, scov] <- 1L:maxlev[scov]
+        row[, scov] <- seq_len(maxlev[scov])
       }
       row
     }
     
     for(scov in subjcov.names){
-      estmat.exp <- do.call("rbind", lapply(1L:nrow(estmat.exp), expand))
+      estmat.exp <- do.call("rbind", lapply(seq_len(nrow(estmat.exp)), expand))
     }
     e <- estmat.exp
     
     # array entries
-    for(i in 1L:nrow(e)){
-      a[e[i, 1L:(length(subjcov.names) + 1L), drop = FALSE]] <- a[e[i, 1L:(length(subjcov.names) + 1L), drop = FALSE]] + e[i, "Value"]
-      #cat(a[e[i, 1L:(length(subjcov.names) + 1L), drop = FALSE]], e[i, 1L:(length(subjcov.names) + 1L), drop = FALSE], "\n")
+    for(i in seq_len(nrow(e))){
+      a[e[i, seq_len(length(subjcov.names) + 1L), drop = FALSE]] <- a[e[i, seq_len(length(subjcov.names) + 1L), drop = FALSE]] + e[i, "Value"]
+      #cat(a[e[i, seq_len(length(subjcov.names) + 1L), drop = FALSE]], e[i, seq_len(length(subjcov.names) + 1L), drop = FALSE], "\n")
     }
     
     ## array into lambda/worth matrix
@@ -224,7 +224,7 @@ llbt.worth <- function(fitobj, outmat = "worth"){
     ## in case of objcovs the rows are collapsed according to obj covs
     if(!is.null(objcovs)){
       # collapse rownames of estmat
-      u        <- 1L:length(objects)
+      u        <- seq_along(objects)
       names(u) <- as.numeric(factor(apply(estmat, 1L, paste, collapse = "")))
       nam      <- aggregate(objects, list(u[names(u)]), paste)$x
       
@@ -233,7 +233,7 @@ llbt.worth <- function(fitobj, outmat = "worth"){
       leg         <- aggregate(rownames(estmat), o, paste, simplify = FALSE)
       ngr         <- ncol(leg) - length(used.objcovs) + 1L
 
-      #namleg <- paste("objgr", 1L:ngr, sep = "")
+      #namleg <- paste("objgr", seq_len(ngr), sep = "")
       namleg <- "objects in groups"
       names(leg)[(length(used.objcovs) + 1L):ncol(leg)] <- namleg   # probably not neccessary (is only of length 1)
       estmat <- unique(estmat)
@@ -257,7 +257,7 @@ llbt.worth <- function(fitobj, outmat = "worth"){
     # switch(outmat,
     #   "lambda" = return(estmat),
     #   "worth"  = return(worthmat),
-    #   stop("     outmat must be either 'worth' or 'lambda'\n")
+    #   stop("     outmat must be either \"worth\" or \"lambda\"\n")
     # )
     
     
@@ -274,7 +274,7 @@ llbt.worth <- function(fitobj, outmat = "worth"){
           class(estmat) <- c("wmat", class(estmat))
           return(estmat)
         },
-      stop("     outmat must be either 'worth' or 'lambda'\n")
+      stop("     outmat must be either \"worth\" or \"lambda\"\n")
     )
     ## end llbtdesignmodel
   } else {
@@ -296,9 +296,9 @@ llbt.worth <- function(fitobj, outmat = "worth"){
     
     # row and colnames for output matrix
     nam.lambda           <- names(lambda)
-    rownames(lambda.mat) <- nam.lambda[1L:nobj]
+    rownames(lambda.mat) <- nam.lambda[seq_len(nobj)]
     nam.new              <- nam.lambda
-    for(i in nam.lambda[1L:nobj]){ # remove obj names from nam.new
+    for(i in nam.lambda[seq_len(nobj)]){ # remove obj names from nam.new
       #nam.new <- gsub(paste("^", i, "$|^", i, "[^0-9]:+|[:alnum:]*:?(", i, "[^0-9]{0,2})$", sep = ""), "", nam.new)
       nam.new <- gsub(paste("^", i, "$|^", i, ":", sep = ""), "", nam.new)
     }
@@ -314,12 +314,12 @@ llbt.worth <- function(fitobj, outmat = "worth"){
       # sort names for model terms according to columns of model matrix
       covmat  <- unique(model.matrix(fitobj$envList$formel, data = fitobj$data))
       cnam    <- colnames(covmat)
-      nam.cov <- sapply(1L:ncol(covmat), function(i){   # sort variable names within interactions terms
-          txt <- sort(unlist(strsplit(cnam[i], ":")))
+      nam.cov <- sapply(seq_len(ncol(covmat)), function(i){   # sort variable names within interactions terms
+          txt <- sort(unlist(strsplit(cnam[i], ":", fixed = TRUE)))
           paste(txt, collapse = ":")
         })
       
-      A     <- nam.lambda[1L:nobj]
+      A     <- nam.lambda[seq_len(nobj)]
       B     <- nam.cov
       B[1L] <- ""
       lo    <- as.vector(t(outer(A, B, paste, sep = ":")))
@@ -330,7 +330,7 @@ llbt.worth <- function(fitobj, outmat = "worth"){
       lambda.mat <- matrix(lambda, nrow = nobj, byrow = TRUE)
       
       colnames(lambda.mat) <- unique(nam.new)
-      rownames(lambda.mat) <- nam.lambda[1L:nobj]
+      rownames(lambda.mat) <- nam.lambda[seq_len(nobj)]
       
       ## calculate sums of estimates accordig to covariate groups
       lambda.vec        <- as.vector(lambda.mat)
@@ -346,17 +346,17 @@ llbt.worth <- function(fitobj, outmat = "worth"){
       
       ## obsolete since option obj.names removed 2011-01-03
       #if(is.null(obj.names))
-      #  rownames(lambda.groups.mat) <- nam.lambda[1L:nobj]
+      #  rownames(lambda.groups.mat) <- nam.lambda[seq_len(nobj)]
       #else
       #  rownames(lambda.groups.mat) <- obj.names
-      rownames(lambda.groups.mat) <- nam.lambda[1L:nobj]
+      rownames(lambda.groups.mat) <- nam.lambda[seq_len(nobj)]
       
       # worth matrix
       worth.groups.mat <- apply(lambda.groups.mat, 2L, function(x){ exp(2.0 * x) / sum(exp(2.0 * x)) })
       
     # case w/o covs
     } else {
-      lambda.mat        <- matrix(lambda, nrow = nobj, dimnames = list(names(lambda)[1L:nobj], "estimate"))
+      lambda.mat        <- matrix(lambda, nrow = nobj, dimnames = list(names(lambda)[seq_len(nobj)], "estimate"))
       lambda.groups.mat <- lambda.mat
       worth.groups.mat  <- apply(lambda.groups.mat, 2L, function(x){ exp(2.0 * x) / sum(exp(2.0 * x)) })
     }
@@ -367,7 +367,7 @@ llbt.worth <- function(fitobj, outmat = "worth"){
     "lambda" = { class(lambda.groups.mat) <- c("wmat", class(lambda.groups.mat)); return(lambda.groups.mat) },
     "worth"  = { class(worth.groups.mat)  <- c("wmat", class(worth.groups.mat)) ; return(worth.groups.mat)  },
     "est"    = { class(lambda.groups.mat) <- c("wmat", class(lambda.groups.mat)); return(lambda.groups.mat) },
-    stop("     outmat must be either 'worth' or 'lambda'\n")
+    stop("     outmat must be either \"worth\" or \"lambda\"\n")
   )
 
 }

@@ -11,7 +11,7 @@ normalize <- function(lambda, X, nobj, ENV){
         eta    <- eta + as.vector(rBstar[, ENV$Malph] %*% alpha) # scalar, based on one row of RBstar, identical for all rows within block
       }
       if(ENV$MISbeta){
-        YrBstar <- do.call(cbind, lapply(1L:nobj, function(x){ ENV$Y[, x] * rBstar[x] })) # design matrix for betas for current block
+        YrBstar <- do.call(cbind, lapply(seq_len(nobj), function(x){ ENV$Y[, x] * rBstar[x] })) # design matrix for betas for current block
         eta     <- eta + YrBstar[, ENV$Mbeta, drop = FALSE] %*% betas # 27.6.2010
       }
     }
@@ -22,7 +22,7 @@ normalize <- function(lambda, X, nobj, ENV){
         eta <- eta + as.vector(r[ENV$Malph] %*% alpha)
       if(ENV$MISbeta){
         Yr  <- ENV$Y[, ENV$Mbeta, drop = FALSE] * r[ENV$Mbeta]
-        ### Yr <- do.call(cbind, lapply((1:nobj, function(x) ENV$Y[, x] * r[x])) # design matrix for betas for current block
+        ### Yr <- do.call(cbind, lapply((seq_len(nobj), function(x) ENV$Y[, x] * r[x])) # design matrix for betas for current block
         eta <- eta + Yr %*% betas
       }
     }
@@ -39,7 +39,7 @@ normalize <- function(lambda, X, nobj, ENV){
 
   # alpha <- betas <- theta <- NULL
   # lam(bda)s, alphas, betas from parametervector lambda
-  lam <- lambda[1L:(nobj - 1L)]
+  lam <- lambda[seq_len(nobj - 1L)]
   if(ENV$MISalpha)  alpha <- lambda[ENV$paridx == 2]
   if(ENV$MISbeta)   betas <- lambda[ENV$paridx == 3]
   if(ENV$MIScommon) alpha <- lambda[ENV$paridx == 4]
