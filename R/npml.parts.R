@@ -6,7 +6,7 @@ expand <- function(x, k){
 
 
 
-gqz <- function(numnodes = 20, minweight = 0.000001){
+gqz <- function(numnodes = 20L, minweight = 0.000001){
 # Calculate Gaussian Quadrature points for the Normal distribution
 # using the abscissas and weights for Hermite integration. The
 # conversion of the locations and weights is given in Lindsey (1992,
@@ -30,11 +30,11 @@ gqz <- function(numnodes = 20, minweight = 0.000001){
 
 
 
-gauss.quad <- function(n, kind = "legendre", alpha = 0, beta = 0){
+gauss.quad <- function(n, kind = "legendre", alpha = 0.0, beta = 0.0){
   
   n <- as.integer(n)
   if(n < 0L) stop("need non-negative number of nodes")
-  if(n == 0L) return(list(nodes = numeric(0), weights = numeric(0)))
+  if(n == 0L) return(list(nodes = numeric(0L), weights = numeric(0L)))
   
   kind <- match.arg(kind, c("legendre", "chebyshev1", "chebyshev2", "hermite", "jacobi", "laguerre"))
   i    <- seq_len(n)
@@ -42,48 +42,48 @@ gauss.quad <- function(n, kind = "legendre", alpha = 0, beta = 0){
   
   switch(kind,
     legendre = {
-      muzero <- 2
-      a      <- rep(0, n)
-      b      <- i1 / sqrt(4 * i1^2 - 1)
+      muzero <- 2.0
+      a      <- rep(0.0, n)
+      b      <- i1 / sqrt(4.0 * i1^2.0 - 1.0)
     },
     chebyshev1 = {
       muzero <- pi
-      a      <- rep(0, n)
-      b      <- rep(0.5, n - 1)
+      a      <- rep(0.0, n)
+      b      <- rep(0.5, n - 1.0)
       b[1L]  <- sqrt(0.5)
     },
     chebyshev2 = {
       muzero <- pi / 2.0
-      a      <- rep(0, n)
-      b      <- rep(0.5, n - 1)
+      a      <- rep(0.0, n)
+      b      <- rep(0.5, n - 1.0)
     },
     hermite = {
       muzero <- sqrt(pi)
-      a      <- rep(0, n)
+      a      <- rep(0.0, n)
       b      <- sqrt(i1 / 2.0)
     },
     jacobi = {
       ab     <- alpha + beta
-      muzero <- 2^(ab + 1) * gamma(alpha + 1) * gamma(beta + 1) / gamma(ab + 2)
+      muzero <- 2.0^(ab + 1.0) * gamma(alpha + 1.0) * gamma(beta + 1.0) / gamma(ab + 2.0)
       a      <- i
-      a[1L]  <- (beta - alpha) / (ab + 2)
+      a[1L]  <- (beta - alpha) / (ab + 2.0)
       i2     <- seq.int(2L, n)
-      abi    <- ab + 2 * i2
-      a[i2]  <- (beta^2 - alpha^2) / (abi - 2) / abi
+      abi    <- ab + 2.0 * i2
+      a[i2]  <- (beta^2.0 - alpha^2.0) / (abi - 2.0) / abi
       b      <- i1
-      b[1L]  <- sqrt(4 * (alpha + 1) * (beta + 1) / (ab + 2)^2 / (ab + 3))
-      i2     <- i1[-1]
-      abi    <- ab + 2 * i2
-      b[i2]  <- sqrt(4 * i2 * (i2 + alpha) * (i2 + beta) * (i2 + ab) / (abi^2 - 1) / abi^2)
+      b[1L]  <- sqrt(4.0 * (alpha + 1.0) * (beta + 1.0) / (ab + 2.0)^2.0 / (ab + 3.0))
+      i2     <- i1[-1L]
+      abi    <- ab + 2.0 * i2
+      b[i2]  <- sqrt(4.0 * i2 * (i2 + alpha) * (i2 + beta) * (i2 + ab) / (abi^2.0 - 1.0) / abi^2.0)
     },
     laguerre = {
-      a      <- 2 * i - 1 + alpha
+      a      <- 2.0 * i - 1.0 + alpha
       b      <- sqrt(i1 * (i1 + alpha))
-      muzero <- gamma(alpha + 1)
+      muzero <- gamma(alpha + 1.0)
     }
   )
   
-  A <- rep(0, n * n)
+  A <- rep(0.0, n * n)
   A[(n + 1L) * (i - 1L) + 1L] <- a
   A[(n + 1L) * (i1 - 1L) + 2L] <- b
   A[(n + 1L) * i1] <- b
@@ -107,11 +107,11 @@ weightslogl.calc.w <- function(p, fjk, weights){
   logpf  <- t(apply(fjk, 1L, "+", log(p)))
   Mi     <- apply(logpf, 1L, max)
   Sik    <- logpf - Mi
-  ifelse(Sik < -760, 0, Sik)
+  ifelse(Sik < -760.0, 0.0, Sik)
   eSik   <- exp(Sik)
   SeSik  <- as.vector(apply(eSik, 1L, sum))
   w      <- eSik / SeSik
-  ML.dev <- -2 * sum(weights * log(apply(eSik, 1L, sum))) - 2 * sum(weights * Mi)
+  ML.dev <- -2.0 * sum(weights * log(apply(eSik, 1L, sum))) - 2.0 * sum(weights * Mi)
   
   list(w = w, ML.dev = ML.dev)
 
@@ -119,7 +119,7 @@ weightslogl.calc.w <- function(p, fjk, weights){
 
 
 
-summary.pattNPML <- function(object, digits = max(3, getOption("digits") - 3), ...){
+summary.pattNPML <- function(object, digits = max(3L, getOption("digits") - 3L), ...){
   
   np <- length(object$coefficients)
   if(np > 0L){
@@ -130,10 +130,10 @@ summary.pattNPML <- function(object, digits = max(3, getOption("digits") - 3), .
     cat(":\n")
     df.r <- object$lastglm$df.residual
 
-    glm.dispersion <- if(any(object$family$family == c("poisson", "binomial"))) 1 else
-        if(df.r > 0){
-          sum(object$lastglm$weights * object$lastglm$residuals^2, na.rm = TRUE) / df.r
-        } else Inf
+    glm.dispersion <- if(any(object$family$family == c("poisson", "binomial"))) 1.0 else
+      if(df.r > 0){
+        sum(object$lastglm$weights * object$lastglm$residuals^2.0, na.rm = TRUE) / df.r
+      } else Inf
     lastglmsumm <- summary.glm(object$lastglm, dispersion = glm.dispersion)
     fitcoef     <- matrix(lastglmsumm$coeff[, seq_len(3L)], ncol = 3L, dimnames = list(dimnames(lastglmsumm$coef)[[1L]], c(dimnames(lastglmsumm$coeff)[[2L]][seq_len(2L)], "t value") ))  #03-08-06
     print(fitcoef)
@@ -144,14 +144,14 @@ summary.pattNPML <- function(object, digits = max(3, getOption("digits") - 3), .
   
   p <- object$masses
   #names(p) <- paste("MASS", seq_len(ncol(object$post.prob)), sep = "") # omitted from 0.42 on
-  dispersion <- 1    # now calculate dispersion in the sense of "dispersion parameter":
-
+  dispersion <- 1.0   # now calculate dispersion in the sense of "dispersion parameter":
+  
   cat("\nMixture proportions:\n")
-  print.default(format(p, digits), print.gap = 2, quote = FALSE)
-
+  print.default(format(p, digits), print.gap = 2L, quote = FALSE)
+  
   if(object$family$family == "gaussian"){
-    dispersion <- (object$sdev$sdev)^2
-    if(object$Misc$lambda <= 1 / length(object$masses)){
+    dispersion <- (object$sdev$sdev)^2.0
+    if(object$Misc$lambda <= 1.0 / length(object$masses)){
       cat("\nComponent distribution - MLE of sigma:\t  ", format(signif(object$sdev$sdev, digits)), "\n")
     } else {
       cat("\nMLE of component standard deviations:\n")
@@ -185,7 +185,7 @@ summary.pattNPML <- function(object, digits = max(3, getOption("digits") - 3), .
   }
   cat("\n")
 
-  if(np > 0){
+  if(np > 0L){
     invisible(c("coefficients" = list(fitcoef), object[-1L], list(dispersion = dispersion), list(lastglmsumm = lastglmsumm)))
   } else {
     invisible(c("coefficients" = list(fitcoef), object[-1L], list(dispersion = dispersion)) )
@@ -194,7 +194,7 @@ summary.pattNPML <- function(object, digits = max(3, getOption("digits") - 3), .
 
 
 
-print.pattNPML <- function(x, digits = max(3, getOption("digits") - 3), ...){
+print.pattNPML <- function(x, digits = max(3L, getOption("digits") - 3L), ...){
   np <- length(x$coefficients)
   # print(names(x))
   if(np > 0L){
@@ -209,11 +209,11 @@ print.pattNPML <- function(x, digits = max(3, getOption("digits") - 3), ...){
     cat("No coefficients. \n")
   }
 
-  if(x$family$family == "gaussian" && x$Misc$lambda <= 1 / length(x$masses)){ # print sigma only if it is constant over components
+  if(x$family$family == "gaussian" && x$Misc$lambda <= 1.0 / length(x$masses)){ # print sigma only if it is constant over components
     cat("Component distribution - MLE of sigma:\t  ", format(signif(x$sdev$sdev, digits)), "\n")   # 03/09/07
   }
   
-  if(x$family$family == "Gamma" && x$Misc$lambda <= 1 / length(x$masses)){ # print shape only if it is constant over components
+  if(x$family$family == "Gamma" && x$Misc$lambda <= 1.0 / length(x$masses)){ # print shape only if it is constant over components
     cat("Component distribution - MLE of shape parameter:\t  ", format(signif(x$shape$shape, digits)), "\n")# 03/09/07
   }
 

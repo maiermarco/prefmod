@@ -11,8 +11,8 @@ aggreg2 <- function(x, ENV){  # x .. data
   # calculate CL vector s
   
   nnaidx <- log2int(notnaidx)
-  iout   <- vector(length = 2^ncomp)
-  RET    <- .Fortran("calcs",
+  iout   <- vector(length = 2L^ncomp)
+  RET    <- .Fortran(F_calcs,
               ncomp  = as.integer(ncomp),
               nnaidx = as.integer(nnaidx),
               iout   = as.integer(iout)

@@ -85,7 +85,7 @@ NIgroupscontrib <- function(obj, lambda, X, nobj, ENV){
     #                                                                                                           #
     #     naidx <- 1 - as.numeric(obj[[block]]$notnaidx)   # R = 1 missing, R = 0 observed                      #
     #                                                                                                           #
-    #     R      <- matrix(rep(naidx, 2^ncomp), nrow = 2^ncomp, byrow = TRUE)                                   #
+    #     R      <- matrix(rep(naidx, 2L^ncomp), nrow = 2L^ncomp, byrow = TRUE)                                 #
     #     RBstar <- R %*% abs(pcdesign(nobj))   # alpha_i + alpha_j                                             #
     #     #RBstar <- R %*% (pcdesign(4))        # alpha_i - alpha_j                                             #
     #                                                                                                           #

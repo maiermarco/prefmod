@@ -13,19 +13,16 @@ writeGLIMcmds <- function(
   objnames,
   undecnames
 ){
-################################################################
-# GLIM commands output
-################################################################
+  ##############################################################################
+  # GLIM commands output                                                       #
+  ##############################################################################
   
-  #env <- get("ENV", environment(patt.design))
-  cat("exporting files for GLIM...(no output in R console)\n")
+  message("exporting files for GLIM...(no output in R console)\n")
   flush.console()
   
-  #env <- get("ENV", environment(patt.design))
-  #for(i in seq_along(ls(env))) do.call("assign", list(ls(env)[i], get(ls(env)[i], env)))
+  
   
   ## design file
-  
   
   colnames(dm)[1L] <- "!y"
   

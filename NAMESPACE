@@ -1,4 +1,4 @@
-useDynLib("prefmod", .registration = TRUE)
+useDynLib("prefmod", .registration = TRUE, .fixes = "F_")
 
 import("stats")
 import("graphics")

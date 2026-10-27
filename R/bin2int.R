@@ -6,7 +6,7 @@ bin2int <- function(bin){
   # TODO packBits --> double (64)
   
   storage.mode(bin) <- "integer"
-
+  
   n   <- length(bin)
   int <- 0L
   

@@ -1,7 +1,7 @@
-`patt.design` <- local({
+patt.design <- local({
   
   ENV <- new.env()   # environment local to patt.design - no objects in .GlobalEnv
-
+  
   ###function(obj, dfr = NULL)
   function(
     obj,

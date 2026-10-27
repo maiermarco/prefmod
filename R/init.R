@@ -1,8 +1,8 @@
 init <- function(dfr){
-################################################################
-# initialisations, read data
-################################################################
-
+  ##############################################################################
+  # initialisations, read data                                                 #
+  ##############################################################################
+  
   datafile  <- get("datafile",  get("ENV", environment(patt.design)))
   nitems    <- get("nitems",    get("ENV", environment(patt.design)))
   objnames  <- get("objnames",  get("ENV", environment(patt.design)))

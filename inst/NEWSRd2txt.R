@@ -20,7 +20,8 @@ Rd2txt_options(
   sectionExtra     = 2L,
   underline_titles = FALSE,
   unicode_symbols  = TRUE,
-  itemBullet       = "• "
+  itemBullet       = "\u2022 ",
+  descStyle        = "colon"
 )
 Rd2txt("NEWS.Rd", out="../NEWS", package = "DirichletReg", outputEncoding = "UTF-8")
 
@@ -29,3 +30,7 @@ Rd2txt("NEWS.Rd", out="../NEWS", package = "DirichletReg", outputEncoding = "UTF
 # NEWS.Rd --> NEWS.pdf
 system("R CMD Rd2pdf --no-preview --encoding=UTF-8 --force NEWS.Rd")
 compactPDF("NEWS.pdf", gs_quality="printer", verbose = TRUE)
+
+
+
+knitr::knit(input = "../README.Rmd", output = "../README.md")

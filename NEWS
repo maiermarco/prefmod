@@ -2,6 +2,17 @@ NEWS               package:DirichletReg                R Documentation
 
 News for Package 'prefmod'
 
+Changes in Version 0.9-0:
+
+  • ‘bin2int()’ now throws and error if ‘bin’ contains more than 31
+    elements (causing and overflow).
+
+  • Lots of improvements suggested by ‘lintr’.
+
+  • ‘prefmod’'s DLL now unloads upon unloading the package.
+
+  • Implemented ‘testthat’ tests.
+
 Changes in Version 0.8-38:
 
   • Minor fixes.
@@ -25,7 +36,7 @@ Changes in Version 0.8-34:
     (dangerous) to 4 (not dangerous) instead of 1 (dangerous) to 5 (not
     dangerous).
 
-  • ‘plotworth()’ is defunct – use ‘plot()’ (or ‘plot.wmat’) instead.
+  • ‘plotworth()’ is defunct - use ‘plot()’ (or ‘plot.wmat’) instead.
 
   • Minor fixes and improvements.
 

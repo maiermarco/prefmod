@@ -10,11 +10,11 @@ aggreg3 <- function(x, ENV){   # x .. data
   
   nnaidx <- log2int(notnaidx)
   iout   <- vector(length = 3^ncomp)
-  RET    <- .Fortran("calcs3",
+  RET    <- .Fortran(F_calcs3,
               ncomp  = as.integer(ncomp),
               nnaidx = as.integer(nnaidx),
               iout   = as.integer(iout)
-        )
+            )
   
   list(counts = counts, notnaidx = notnaidx, s = RET$iout)
 

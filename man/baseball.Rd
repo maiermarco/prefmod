@@ -31,7 +31,7 @@ names(d) <- c(paste0("v", 1:21), "cov")
 # design matrix
 des5 <- llbt.design(d, nitems = 7,
     objnames = c("MIL", "DET", "TOR", "NY", "BOS", "CLE", "BAL"),
-    cat.scov = "cov")
+    cat.scovs = "cov")
 des5$y  <- baseball
 des5$mu <- gl(42, 2)
 pos     <- c(rep(1:0, 21), rep(0:1, 21))
